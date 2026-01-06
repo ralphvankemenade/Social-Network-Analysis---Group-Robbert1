@@ -81,7 +81,6 @@ def page() -> None:
     st.subheader("Comparison with role clustering")
     # Compute role result if not already
     if get_state("role_result") is None:
-        import pandas as pd  # imported here to avoid top-level import issues
         from dss.analytics.centrality import compute_centralities
         centrality_table = compute_centralities(G)
         role_result = compute_roles(G, centrality_table=centrality_table)
@@ -93,6 +92,8 @@ def page() -> None:
     nmi = normalized_mutual_info_score(role_labels_list, comm_labels_list)
     st.write(f"Adjusted Rand Index between roles and communities: {ari:.3f}")
     st.write(f"Normalized Mutual Information: {nmi:.3f}")
+    
+    import pandas as pd  # imported here to avoid top-level import issues
     confusion = pd.crosstab(pd.Series(role_labels_list, name="role"), pd.Series(comm_labels_list, name="community"))
     st.dataframe(confusion)
 
