@@ -7,7 +7,7 @@ discover latent factions, assess the robustness of clustering results, study
 connectivity via the Kemeny constant, and allocate arrest teams while
 minimising warnings within the network.  The implementation is based on two
 project documents, one describing the high‑level objectives and another
-detailing the methodological and mathematical requirements【429076285098930†L38-L115】【659313343491487†L155-L233】.
+detailing the methodological and mathematical requirements.
 
 ## Getting started
 
@@ -89,7 +89,7 @@ pytest -q
 ## Application pages
 
 The Streamlit application consists of several pages, each addressing a
-specific research question identified in the project documents【429076285098930†L38-L115】:
+specific research question identified in the project documents:
 
 1. **Upload & Overview:**  Parses the uploaded `.mtx` file,
    builds a graph, validates the adjacency matrix (symmetry, self loops, number
@@ -100,10 +100,10 @@ specific research question identified in the project documents【429076285098930
    (degree, Katz, eigenvector, betweenness, closeness and PageRank).  The
    page includes controls for highlighting the top‑ and bottom‑ranked
    nodes, and supports combining measures via weighted sums or Borda
-   count【659313343491487†L63-L83】.
+   count.
 
 3. **Roles:**  Implements the role‑similarity approach of Cooper and
-   Barahona (2010)【659313343491487†L84-L116】.  Nodes are represented by
+   Barahona (2010).  Nodes are represented by
    structural signatures (k‑hop degree vectors or random‑walk profiles), a
    similarity matrix is computed, and hierarchical or spectral clustering is
    applied.  The resulting role clusters are summarised using basic
@@ -112,19 +112,19 @@ specific research question identified in the project documents【429076285098930
 4. **Communities & Robustness:**  Provides community detection using
    Louvain, Girvan–Newman and spectral clustering, computes modularity `Q`,
    and evaluates robustness via perturbation tests (removing 5 % of edges and
-   measuring changes in adjusted Rand index and modularity)【659313343491487†L123-L147】.  The
+   measuring changes in adjusted Rand index and modularity).  The
    page also compares community partitions with role clusters.
 
 5. **Kemeny Analysis:**  Computes the Kemeny constant of the network via
-   the fundamental matrix of a Markov chain【429076285098930†L81-L94】.  Users can
+   the fundamental matrix of a Markov chain.  Users can
    interactively remove nodes (via a selection widget) and observe how the
    Kemeny constant changes, with options to compute only on the largest
-   connected component if the graph becomes disconnected【659313343491487†L170-L194】.
+   connected component if the graph becomes disconnected.
 
 6. **Arrest Optimisation:**  Formulates the assignment of nodes to two
    arresting departments as a balanced cut problem with capacity constraints,
    using an integer linear program to minimise cross‑department edges and a
-   regret term based on communities and optionally centrality【659313343491487†L195-L250】.  A heuristic
+   regret term based on communities and optionally centrality.  A heuristic
    fallback is provided when an ILP solver is unavailable.
 
 7. **User Manual:**  A non‑technical guide for the spymaster, including
