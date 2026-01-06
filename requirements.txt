@@ -1,0 +1,11 @@
+streamlit>=1.25
+numpy
+pandas
+scipy
+networkx
+scikit-learn
+matplotlib
+python-louvain
+pulp
+seaborn
+pytest
