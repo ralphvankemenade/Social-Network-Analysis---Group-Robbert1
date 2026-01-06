@@ -67,7 +67,7 @@ def plot_network(
     if node_size is not None:
         sizes_raw = np.array([node_size.get(n, 1.0) for n in G.nodes()], dtype=float)
         if sizes_raw.max() > 0:
-            sizes = 300.0 * (sizes_raw / sizes_raw.max())
+            sizes = 200.0 * (sizes_raw / sizes_raw.max())
         else:
             sizes = np.full_like(sizes_raw, 100.0)
     else:
