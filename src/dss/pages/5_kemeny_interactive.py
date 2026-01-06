@@ -57,8 +57,6 @@ def page() -> None:
             title="Removed nodes are outlined in red",
             show_labels=True,
         )
-
-        st.write(result.history)
     else:
         st.info("Select nodes from the list above to remove them and recompute the Kemeny constant.")
     
