@@ -126,7 +126,7 @@ def plot_network(
             # fs = 6 + 6 * (sizes_raw[idx] / max_raw)
             fs = 4 + 3 * (sizes_raw[idx] / max_raw)
             label = label_dict[n] if (label_dict is not None and n in label_dict) else str(n)
-            ax.text(x, y, label, fontsize=fs, ha='center', va='center', color='#white') #,bbox=dict(facecolor="white", alpha=0.6, edgecolor="none", pad=0.5)) #color='black')
+            ax.text(x, y, label, fontsize=fs, ha='center', va='center', color='white') #,bbox=dict(facecolor="white", alpha=0.6, edgecolor="none", pad=0.5)) #color='black')
     # Set title if provided
     if title:
         ax.set_title(title)
