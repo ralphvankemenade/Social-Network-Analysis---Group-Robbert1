@@ -131,8 +131,6 @@
 #         return
 #     order[i], order[j] = order[j], order[i]
 #     st.session_state["kemeny_edge_order"] = order
-
-#     # tell UI to keep the same active edge selected after rerun
 #     st.session_state["kemeny_edge_force_active"] = active
 
 
@@ -155,12 +153,24 @@
 #     label_to_edge = _build_label_to_edge(G)
 #     all_labels = list(label_to_edge.keys())
 
-#     selected = st.multiselect(
+#     # --- Selected edges state (source of truth) ---
+#     if "kemeny_edge_selected_state" not in st.session_state:
+#         st.session_state["kemeny_edge_selected_state"] = []
+
+#     # If we need to sync the widget value, do it BEFORE widget creation
+#     if st.session_state.pop("kemeny_edge_sync_selected", False):
+#         st.session_state["kemeny_edge_selected_widget"] = list(st.session_state["kemeny_edge_selected_state"])
+
+#     selected_widget = st.multiselect(
 #         "Select edges to remove",
 #         options=all_labels,
-#         default=st.session_state.get("kemeny_edge_selected", []),
-#         key="kemeny_edge_selected",
+#         default=st.session_state["kemeny_edge_selected_state"],
+#         key="kemeny_edge_selected_widget",
 #     )
+
+#     # Persist widget -> state (this is always allowed)
+#     st.session_state["kemeny_edge_selected_state"] = list(selected_widget)
+#     selected = list(selected_widget)
 
 #     order = _sync_order(selected, label_to_edge)
 
@@ -169,7 +179,6 @@
 #         st.info("Select edges above to start building a removal order.")
 #         return
 
-#     # Step table: baseline 0 + steps 1..k
 #     order_df = pd.DataFrame({"Step": list(range(1, len(order) + 1)), "Edge removed": order})
 #     order_df = pd.concat(
 #         [pd.DataFrame({"Step": [0], "Edge removed": ["Baseline (no removal)"]}), order_df],
@@ -183,17 +192,10 @@
 #     with col_b:
 #         widget_key = "kemeny_edge_active"
 
-#         # Determine desired active:
-#         # - if we just moved something, keep that one active
-#         # - else keep whatever the widget already has
-#         # - else fall back to first item
 #         forced = st.session_state.pop("kemeny_edge_force_active", None)
-
 #         if forced is not None and forced in order:
 #             st.session_state[widget_key] = forced
 #         else:
-#             # Do NOT overwrite user choice.
-#             # Only fix if widget value is missing or invalid.
 #             if widget_key not in st.session_state or st.session_state[widget_key] not in order:
 #                 st.session_state[widget_key] = order[0]
 
@@ -210,8 +212,14 @@
 #                 st.rerun()
 
 #         if st.button("Remove", use_container_width=True):
+#             # Update order
 #             st.session_state["kemeny_edge_order"] = [lbl for lbl in order if lbl != active]
-#             st.session_state["kemeny_edge_selected"] = [lbl for lbl in selected if lbl != active]
+
+#             # Update selected state (DO NOT touch the widget key here)
+#             st.session_state["kemeny_edge_selected_state"] = [lbl for lbl in selected if lbl != active]
+
+#             # Request sync on next run (before widget instantiation)
+#             st.session_state["kemeny_edge_sync_selected"] = True
 
 #             new_order = st.session_state["kemeny_edge_order"]
 #             if new_order:
@@ -226,8 +234,8 @@
 #     else:
 #         st.warning("Kemeny constant is undefined for the selected removals.")
 
-
 #     col_plot, col_graph = st.columns([1, 1])
+
 #     with col_plot:
 #         st.subheader("Kemeny constant after each removal")
 #         fig, ax = plt.subplots()
@@ -241,29 +249,30 @@
 
 #     with col_graph:
 #         st.subheader("Network view (after removing edges)")
+
 #         H = G.copy()
 #         for u, v in ordered_edges:
-#                 if H.has_edge(u, v):
-#                         H.remove_edge(u, v)
-#                 elif (not H.is_directed()) and H.has_edge(v, u):
-#                     H.remove_edge(v, u)
+#             if H.has_edge(u, v):
+#                 H.remove_edge(u, v)
+#             elif (not H.is_directed()) and H.has_edge(v, u):
+#                 H.remove_edge(v, u)
 
 #         display_network(
-#                 H,
-#                 node_size=None,
-#                 node_color=None,
-#                 highlight=[],
-#                 title="Graph after edge removals",
-#                 show_labels=True,
-#             )
+#             H,
+#             node_size=None,
+#             node_color=None,
+#             highlight=[],
+#             title="Graph after edge removals",
+#             show_labels=True,
+#             removed_edges=ordered_edges,
+#         )
 
 
 # if __name__ == "__main__":
 #     page()
 
-
-
 #========================================================================================
+
 # File: src/dss/pages/5_kemeny_interactive.py
 """Streamlit page: Kemeny constant analysis with interactive EDGE removal."""
 
@@ -310,17 +319,47 @@ def _sync_order(selected: List[str], label_to_edge: Dict[str, Edge]) -> List[str
     return order
 
 
-def _move(active: str, direction: int) -> None:
+def _move_active(direction: int) -> None:
     order: List[str] = list(st.session_state.get("kemeny_edge_order", []))
-    if active not in order:
+    active: str = st.session_state.get("kemeny_edge_active", "")
+    if not order or active not in order:
         return
+
     i = order.index(active)
     j = i + direction
     if j < 0 or j >= len(order):
         return
+
     order[i], order[j] = order[j], order[i]
     st.session_state["kemeny_edge_order"] = order
-    st.session_state["kemeny_edge_force_active"] = active
+
+    # keep the same active edge selected
+    st.session_state["kemeny_edge_active"] = active
+
+
+def _remove_active_edge() -> None:
+    order: List[str] = list(st.session_state.get("kemeny_edge_order", []))
+    selected: List[str] = list(st.session_state.get("kemeny_edge_selected_state", []))
+    active: str = st.session_state.get("kemeny_edge_active", "")
+
+    if not order or active not in order:
+        return
+
+    new_order = [lbl for lbl in order if lbl != active]
+    new_selected = [lbl for lbl in selected if lbl != active]
+
+    st.session_state["kemeny_edge_order"] = new_order
+    st.session_state["kemeny_edge_selected_state"] = new_selected
+
+    # Important: update the multiselect widget value in the callback
+    # (this runs before the next render, so Streamlit allows it)
+    st.session_state["kemeny_edge_selected_widget"] = list(new_selected)
+
+    # update active edge
+    if new_order:
+        st.session_state["kemeny_edge_active"] = new_order[0]
+    else:
+        st.session_state["kemeny_edge_active"] = ""
 
 
 def page() -> None:
@@ -342,12 +381,10 @@ def page() -> None:
     label_to_edge = _build_label_to_edge(G)
     all_labels = list(label_to_edge.keys())
 
-    # --- Selected edges state (source of truth) ---
+    # Selected edges state (source of truth)
     if "kemeny_edge_selected_state" not in st.session_state:
         st.session_state["kemeny_edge_selected_state"] = []
-
-    # If we need to sync the widget value, do it BEFORE widget creation
-    if st.session_state.pop("kemeny_edge_sync_selected", False):
+    if "kemeny_edge_selected_widget" not in st.session_state:
         st.session_state["kemeny_edge_selected_widget"] = list(st.session_state["kemeny_edge_selected_state"])
 
     selected_widget = st.multiselect(
@@ -357,7 +394,7 @@ def page() -> None:
         key="kemeny_edge_selected_widget",
     )
 
-    # Persist widget -> state (this is always allowed)
+    # Persist widget -> state
     st.session_state["kemeny_edge_selected_state"] = list(selected_widget)
     selected = list(selected_widget)
 
@@ -379,41 +416,19 @@ def page() -> None:
         st.dataframe(order_df, use_container_width=True, hide_index=True)
 
     with col_b:
-        widget_key = "kemeny_edge_active"
+        # Active edge selection
+        if "kemeny_edge_active" not in st.session_state or st.session_state["kemeny_edge_active"] not in order:
+            st.session_state["kemeny_edge_active"] = order[0]
 
-        forced = st.session_state.pop("kemeny_edge_force_active", None)
-        if forced is not None and forced in order:
-            st.session_state[widget_key] = forced
-        else:
-            if widget_key not in st.session_state or st.session_state[widget_key] not in order:
-                st.session_state[widget_key] = order[0]
-
-        active = st.selectbox("Edge to reorder", options=order, key=widget_key)
+        st.selectbox("Edge to reorder", options=order, key="kemeny_edge_active")
 
         b1, b2 = st.columns(2)
         with b1:
-            if st.button("Up", use_container_width=True):
-                _move(active, -1)
-                st.rerun()
+            st.button("Up", use_container_width=True, on_click=_move_active, args=(-1,))
         with b2:
-            if st.button("Down", use_container_width=True):
-                _move(active, +1)
-                st.rerun()
+            st.button("Down", use_container_width=True, on_click=_move_active, args=(+1,))
 
-        if st.button("Remove", use_container_width=True):
-            # Update order
-            st.session_state["kemeny_edge_order"] = [lbl for lbl in order if lbl != active]
-
-            # Update selected state (DO NOT touch the widget key here)
-            st.session_state["kemeny_edge_selected_state"] = [lbl for lbl in selected if lbl != active]
-
-            # Request sync on next run (before widget instantiation)
-            st.session_state["kemeny_edge_sync_selected"] = True
-
-            new_order = st.session_state["kemeny_edge_order"]
-            if new_order:
-                st.session_state["kemeny_edge_force_active"] = new_order[0]
-            st.rerun()
+        st.button("Remove", use_container_width=True, on_click=_remove_active_edge)
 
     ordered_edges: List[Edge] = [label_to_edge[lbl] for lbl in st.session_state["kemeny_edge_order"]]
 
@@ -459,3 +474,9 @@ def page() -> None:
 
 if __name__ == "__main__":
     page()
+
+
+
+
+
+
