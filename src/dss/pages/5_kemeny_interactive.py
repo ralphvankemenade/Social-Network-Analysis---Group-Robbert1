@@ -205,7 +205,6 @@
 
 
 #========================================================================================
-
 # File: src/dss/pages/5_kemeny_interactive.py
 """Streamlit page: Kemeny constant analysis with interactive EDGE removal."""
 
@@ -238,30 +237,33 @@ def _build_label_to_edge(G: nx.Graph) -> Dict[str, Edge]:
 def _sync_order(selected: List[str], label_to_edge: Dict[str, Edge]) -> List[str]:
     if "kemeny_edge_order" not in st.session_state:
         st.session_state["kemeny_edge_order"] = []
-    order: List[str] = list(st.session_state["kemeny_edge_order"])
 
+    order: List[str] = list(st.session_state["kemeny_edge_order"])
     selected_set = set(selected)
 
-    # remove unselected
+    # Remove unselected
     order = [lbl for lbl in order if lbl in selected_set]
 
-    # append new (deterministic)
+    # Append new selections (deterministic)
     for lbl in sorted(selected_set):
         if lbl not in order and lbl in label_to_edge:
             order.append(lbl)
 
     st.session_state["kemeny_edge_order"] = order
 
-    # keep active selection stable
+    # If active not set yet, set before widget instantiation
     if "kemeny_edge_active" not in st.session_state:
         st.session_state["kemeny_edge_active"] = order[0] if order else None
-    if st.session_state["kemeny_edge_active"] not in order:
+
+    # If active disappeared, set before widget instantiation (safe here)
+    if st.session_state.get("kemeny_edge_active") not in order:
         st.session_state["kemeny_edge_active"] = order[0] if order else None
 
     return order
 
 
 def _move(order_key: str, label: str, direction: int) -> None:
+    """direction: -1 up, +1 down. Only updates the order, not the widget value."""
     order: List[str] = list(st.session_state.get(order_key, []))
     if label not in order:
         return
@@ -271,8 +273,6 @@ def _move(order_key: str, label: str, direction: int) -> None:
         return
     order[i], order[j] = order[j], order[i]
     st.session_state[order_key] = order
-    # keep the same item selected after reorder
-    st.session_state["kemeny_edge_active"] = label
 
 
 def page() -> None:
@@ -311,13 +311,8 @@ def page() -> None:
         st.info("Select edges above to start building a removal order.")
         return
 
-    # Step-style order table: baseline row 0 + removal rows 1..k
-    order_df = pd.DataFrame(
-        {
-            "Step": list(range(1, len(order) + 1)),
-            "Edge removed": order,
-        }
-    )
+    # Step table: baseline row 0 + removal rows 1..k
+    order_df = pd.DataFrame({"Step": list(range(1, len(order) + 1)), "Edge removed": order})
     baseline_df = pd.DataFrame({"Step": [0], "Edge removed": ["Baseline (no removal)"]})
     order_df = pd.concat([baseline_df, order_df], ignore_index=True)
 
@@ -331,6 +326,7 @@ def page() -> None:
             options=order,
             key="kemeny_edge_active",
         )
+
         b1, b2 = st.columns(2)
         with b1:
             if st.button("Up", use_container_width=True):
@@ -344,7 +340,7 @@ def page() -> None:
         if st.button("Remove", use_container_width=True):
             st.session_state["kemeny_edge_order"] = [lbl for lbl in order if lbl != active]
             st.session_state["kemeny_edge_selected"] = [lbl for lbl in selected if lbl != active]
-            # choose next active neatly
+            # set active before rerun (safe: widget will be re-created next run)
             new_order = st.session_state["kemeny_edge_order"]
             st.session_state["kemeny_edge_active"] = new_order[0] if new_order else None
             st.rerun()
@@ -361,10 +357,10 @@ def page() -> None:
     fig, ax = plt.subplots()
     series = [base_k] + result.history
     ax.plot(list(range(len(series))), series, marker="o")
-    ax.set_xlabel("Number of removed edges")
+    ax.set_xlabel("Step")
     ax.set_ylabel("Kemeny constant")
     ax.grid()
-    ax.set_title("Kemeny constant versus number of removed edges")
+    ax.set_title("Kemeny constant versus removal steps")
     st.pyplot(fig)
 
     st.subheader("Network view (after removing edges)")
