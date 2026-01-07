@@ -414,32 +414,36 @@ def page() -> None:
     else:
         st.warning("Kemeny constant is undefined for the selected removals.")
 
-    st.subheader("Kemeny constant after each removal")
-    fig, ax = plt.subplots()
-    series = [base_k] + result.history
-    ax.plot(list(range(len(series))), series, marker="o")
-    ax.set_xlabel("Step")
-    ax.set_ylabel("Kemeny constant")
-    ax.grid()
-    ax.set_title("Kemeny constant versus removal steps")
-    st.pyplot(fig)
 
-    st.subheader("Network view (after removing edges)")
-    H = G.copy()
-    for u, v in ordered_edges:
-        if H.has_edge(u, v):
-            H.remove_edge(u, v)
-        elif (not H.is_directed()) and H.has_edge(v, u):
-            H.remove_edge(v, u)
+    col_plot, col_graph = st.columns([1, 1])
+    with col_plot:
+        st.subheader("Kemeny constant after each removal")
+        fig, ax = plt.subplots()
+        series = [base_k] + result.history
+        ax.plot(list(range(len(series))), series, marker="o")
+        ax.set_xlabel("Step")
+        ax.set_ylabel("Kemeny constant")
+        ax.grid()
+        ax.set_title("Kemeny constant versus removal steps")
+        st.pyplot(fig)
 
-    display_network(
-        H,
-        node_size=None,
-        node_color=None,
-        highlight=[],
-        title="Graph after edge removals",
-        show_labels=True,
-    )
+    with col_graph:
+        st.subheader("Network view (after removing edges)")
+        H = G.copy()
+        for u, v in ordered_edges:
+                if H.has_edge(u, v):
+                        H.remove_edge(u, v)
+                elif (not H.is_directed()) and H.has_edge(v, u):
+                    H.remove_edge(v, u)
+
+        display_network(
+                H,
+                node_size=None,
+                node_color=None,
+                highlight=[],
+                title="Graph after edge removals",
+                show_labels=True,
+            )
 
 
 if __name__ == "__main__":
