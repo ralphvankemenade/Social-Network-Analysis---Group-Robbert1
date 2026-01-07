@@ -31,17 +31,19 @@ def page() -> None:
     combined_scores = result.combined_scores
     ranks = result.ranks
     st.subheader("Centrality measures")
-    # Sidebar for weighting scheme
-    st.sidebar.header("Weighting scheme")
     weight_inputs = {}
-    for col in df.columns:
-        weight_inputs[col] = st.sidebar.slider(f"Weight for {col}", 0.0, 1.0, 1.0, 0.1)
     # Choose aggregation method
     agg_method = st.sidebar.radio("Aggregation method", ["Weighted sum", "Borda count"], index=0)
+    
     if agg_method == "Weighted sum":
-        combined = combine_centralities(df, weights=weight_inputs)
+        # Sidebar for weighting scheme
+        st.sidebar.header("Weighting scheme")
+        for col in df.columns:
+            weight_inputs[col] = st.sidebar.slider(f"Weight for {col}", 0.0, 1.0, 1.0, 0.1)
+            combined = combine_centralities(df, weights=weight_inputs)
     else:
         combined = borda_count(df)
+    
     # Display centrality table
     st.dataframe(df.assign(combined=combined).sort_values("combined", ascending=False))
     # Download as CSV
