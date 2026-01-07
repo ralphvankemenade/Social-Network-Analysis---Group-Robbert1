@@ -263,7 +263,6 @@
 
 
 #========================================================================================
-
 # File: src/dss/pages/5_kemeny_interactive.py
 """Streamlit page: Kemeny constant analysis with interactive EDGE removal."""
 
@@ -283,7 +282,6 @@ from dss.analytics.kemeny import kemeny_constant, interactive_kemeny_edges, Edge
 
 def _edge_label(G: nx.Graph, e: Edge) -> str:
     u, v = e
-    # make label stable even if nodes are ints
     su, sv = str(u), str(v)
     return f"{su} -> {sv}" if G.is_directed() else f"{su} - {sv}"
 
@@ -303,35 +301,27 @@ def _sync_order(selected: List[str], label_to_edge: Dict[str, Edge]) -> List[str
     selected_set = set(selected)
 
     order = [lbl for lbl in order if lbl in selected_set]
-
     for lbl in sorted(selected_set):
         if lbl not in order and lbl in label_to_edge:
             order.append(lbl)
 
     st.session_state["kemeny_edge_order"] = order
-
-    # active value (NOT the widget key)
-    if "kemeny_edge_active_value" not in st.session_state:
-        st.session_state["kemeny_edge_active_value"] = order[0] if order else None
-    if st.session_state["kemeny_edge_active_value"] not in order:
-        st.session_state["kemeny_edge_active_value"] = order[0] if order else None
-
     return order
 
 
-def _move(label: str, direction: int) -> None:
+def _move(active: str, direction: int) -> None:
     order: List[str] = list(st.session_state.get("kemeny_edge_order", []))
-    if label not in order:
+    if active not in order:
         return
-    i = order.index(label)
+    i = order.index(active)
     j = i + direction
     if j < 0 or j >= len(order):
         return
     order[i], order[j] = order[j], order[i]
     st.session_state["kemeny_edge_order"] = order
 
-    # keep the same label "active" across reruns
-    st.session_state["kemeny_edge_active_value"] = label
+    # tell UI to keep the same active edge selected after rerun
+    st.session_state["kemeny_edge_force_active"] = active
 
 
 def page() -> None:
@@ -367,7 +357,7 @@ def page() -> None:
         st.info("Select edges above to start building a removal order.")
         return
 
-    # Step table: baseline 0 + removal steps 1..k
+    # Step table: baseline 0 + steps 1..k
     order_df = pd.DataFrame({"Step": list(range(1, len(order) + 1)), "Edge removed": order})
     order_df = pd.concat(
         [pd.DataFrame({"Step": [0], "Edge removed": ["Baseline (no removal)"]}), order_df],
@@ -379,17 +369,23 @@ def page() -> None:
         st.dataframe(order_df, use_container_width=True, hide_index=True)
 
     with col_b:
-        # IMPORTANT: set widget value BEFORE widget exists in this run
-        st.session_state["kemeny_edge_active_widget"] = st.session_state["kemeny_edge_active_value"]
+        widget_key = "kemeny_edge_active"
 
-        active = st.selectbox(
-            "Edge to reorder",
-            options=order,
-            key="kemeny_edge_active_widget",
-        )
+        # Determine desired active:
+        # - if we just moved something, keep that one active
+        # - else keep whatever the widget already has
+        # - else fall back to first item
+        forced = st.session_state.pop("kemeny_edge_force_active", None)
 
-        # persist back into active_value
-        st.session_state["kemeny_edge_active_value"] = active
+        if forced is not None and forced in order:
+            st.session_state[widget_key] = forced
+        else:
+            # Do NOT overwrite user choice.
+            # Only fix if widget value is missing or invalid.
+            if widget_key not in st.session_state or st.session_state[widget_key] not in order:
+                st.session_state[widget_key] = order[0]
+
+        active = st.selectbox("Edge to reorder", options=order, key=widget_key)
 
         b1, b2 = st.columns(2)
         with b1:
@@ -404,8 +400,10 @@ def page() -> None:
         if st.button("Remove", use_container_width=True):
             st.session_state["kemeny_edge_order"] = [lbl for lbl in order if lbl != active]
             st.session_state["kemeny_edge_selected"] = [lbl for lbl in selected if lbl != active]
+
             new_order = st.session_state["kemeny_edge_order"]
-            st.session_state["kemeny_edge_active_value"] = new_order[0] if new_order else None
+            if new_order:
+                st.session_state["kemeny_edge_force_active"] = new_order[0]
             st.rerun()
 
     ordered_edges: List[Edge] = [label_to_edge[lbl] for lbl in st.session_state["kemeny_edge_order"]]
@@ -446,4 +444,3 @@ def page() -> None:
 
 if __name__ == "__main__":
     page()
-
