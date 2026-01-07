@@ -87,15 +87,9 @@ def page() -> None:
 
 
     st.markdown("""
-        ## Centrality Analysis – Quick User Guide
-        
-        This page helps you identify **important nodes in a network**.  
-        A network consists of **nodes** (circles) and **edges** (connections).
-        
-        “Importance” can mean different things. Therefore, multiple **centrality metrics** are used.
-        
         ---
-        
+        ## Centrality Analysis – Quick User Guide
+
         ### Centrality metrics (what do they mean?)
         
         **Degree**  
@@ -138,15 +132,6 @@ def page() -> None:
         
         **Borda count**  
         Ranks nodes per metric and combines the rankings.
-        
-        ---
-        
-        ### Network visualization
-        
-        Node size reflects the **combined centrality score**.  
-        Highlighted nodes show the **Top N** (or Bottom N) based on your settings.
-        
-        Tip: start with equal weights and adjust one slider at a time to see the effect.
     """)
 
 
