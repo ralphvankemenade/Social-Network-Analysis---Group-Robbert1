@@ -276,7 +276,6 @@
 
 #========================================================================================
 
-
 # File: src/dss/pages/5_kemeny_interactive.py
 """Streamlit page: Kemeny constant analysis with interactive EDGE removal."""
 
@@ -400,14 +399,27 @@ def page() -> None:
     base_k = kemeny_constant(G)
     result = interactive_kemeny_edges(G, ordered_edges, recompute_on_largest)
 
-    # === MAIN CONTENT ROW: constants | plot | graph ===
+    # Kemeny interpretation:
+    # Lower Kemeny means faster mixing / shorter expected travel time in the Markov chain,
+    # so "better" here is LOWER.
+    after_k = result.kemeny
+    kemeny_defined = after_k == after_k  # not NaN
+    delta = (after_k - base_k) if kemeny_defined else None
+
+    # === MAIN CONTENT ROW: constants | plot ===
     col_const, _, col_plot = st.columns([1, 1, 3])
 
     with col_const:
         st.markdown("### Kemeny constants")
         st.metric("Kemeny constant (baseline)", f"{base_k:.3f}")
-        if result.kemeny == result.kemeny:
-            st.metric("Kemeny constant (after removals)", f"{result.kemeny:.3f}")
+
+        if kemeny_defined:
+            st.metric(
+                "Kemeny constant (after removals)",
+                f"{after_k:.3f}",
+                delta=f"{delta:+.3f}",
+                delta_color="inverse",  # lower is better -> green when delta is negative
+            )
         else:
             st.warning("Kemeny constant is undefined for the selected removals.")
 
@@ -435,7 +447,7 @@ def page() -> None:
         ignore_index=True,
     )
 
-    col_a, col_b, col_graph  = st.columns([1, 1, 3])
+    col_a, col_b, col_graph = st.columns([1, 1, 3])
 
     with col_a:
         st.dataframe(order_df, use_container_width=True, hide_index=True)
@@ -453,26 +465,25 @@ def page() -> None:
             st.button("Down", use_container_width=True, on_click=_move_active, args=(+1,))
 
         st.button("Remove", use_container_width=True, on_click=_remove_active_edge)
-    
-    with col_graph:
-                st.markdown("### Network view (after removing edges)")
-                H = G.copy()
-                for u, v in ordered_edges:
-                    if H.has_edge(u, v):
-                        H.remove_edge(u, v)
-                    elif (not H.is_directed()) and H.has_edge(v, u):
-                        H.remove_edge(v, u)
-        
-                display_network(
-                    H,
-                    node_size=None,
-                    node_color=None,
-                    highlight=[],
-                    title="Graph after edge removals",
-                    show_labels=True,
-                    removed_edges=ordered_edges,
-                )
 
+    with col_graph:
+        st.markdown("### Network view (after removing edges)")
+        H = G.copy()
+        for u, v in ordered_edges:
+            if H.has_edge(u, v):
+                H.remove_edge(u, v)
+            elif (not H.is_directed()) and H.has_edge(v, u):
+                H.remove_edge(v, u)
+
+        display_network(
+            H,
+            node_size=None,
+            node_color=None,
+            highlight=[],
+            title="Graph after edge removals",
+            show_labels=True,
+            removed_edges=ordered_edges,
+        )
 
 
 if __name__ == "__main__":
