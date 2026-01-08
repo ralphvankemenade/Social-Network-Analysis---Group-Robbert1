@@ -334,7 +334,7 @@ def plot_network(
                 edgelist=[(u, v)],
                 ax=ax,
                 edge_color="red",
-                width=2.2,  # thicker so it stays visible
+                width=1.5,  # thicker so it stays visible
                 alpha=1.0,
                 style=(0, (dash_on, dash_off)),
             )
