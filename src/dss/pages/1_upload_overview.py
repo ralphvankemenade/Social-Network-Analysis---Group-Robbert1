@@ -29,6 +29,7 @@ def page() -> None:
         try:
             # Load adjacency matrix
             adjacency = load_mtx(uploaded_file)
+            st.write(adjacency)
             # Build graph (assume undirected by default)
             G = build_graph(adjacency, directed=False)
             # Validate graph
