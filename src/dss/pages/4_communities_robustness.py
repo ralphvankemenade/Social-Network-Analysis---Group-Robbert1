@@ -12,8 +12,8 @@ from dss.analytics.roles import compute_roles
 
 
 def page() -> None:
-    st.set_page_config(page_title="Communities & Robustness", layout="wide")
-    st.title("Community Detection and Robustness")
+    st.set_page_config(page_title="Communities Clustering", layout="wide")
+    st.title("Community Clustering")
     init_state()
     G = get_state("graph")
     if G is None:
@@ -21,7 +21,8 @@ def page() -> None:
         return
     # Sidebar: choose method and parameters
     st.sidebar.header("Community detection parameters")
-    method = st.sidebar.selectbox("Method", ["louvain", "girvan_newman", "spectral"], index=0)
+    # method = st.sidebar.selectbox("Method", ["louvain", "girvan_newman", "spectral"], index=0)
+    method = st.sidebar.selectbox("Method", ["spectral", "girvan_newman", "louvain"], index=0)
     if method in {"girvan_newman", "spectral"}:
         k = st.sidebar.slider("Number of clusters (k)", 2, max(2, int(G.number_of_nodes() / 2)), 2)
     else:
@@ -60,10 +61,10 @@ def page() -> None:
         df_details = centralities.loc[selected_nodes].copy()
         df_details["community"] = [comm_result.labels[n] for n in selected_nodes]
         # Also show role cluster if available
-        if get_state("role_result") is not None:
-            role_result = get_state("role_result")
-            df_details["role"] = [role_result.labels[n] for n in selected_nodes]
-        st.dataframe(df_details)
+       # if get_state("role_result") is not None:
+       #     role_result = get_state("role_result")
+      #      df_details["role"] = [role_result.labels[n] for n in selected_nodes]
+      #  st.dataframe(df_details)
     # Robustness analysis
     st.subheader("Robustness analysis")
     runs = st.sidebar.slider("Number of perturbation runs", 10, 100, 50)
@@ -78,24 +79,24 @@ def page() -> None:
         display_histogram(robustness_result.ari_scores, title="ARI distribution", xlabel="ARI")
         display_boxplot(robustness_result.modularity_drops, title="Modularity drop distribution", ylabel="ΔQ")
     # Compare to roles
-    st.subheader("Comparison with role clustering")
+#    st.subheader("Comparison with role clustering")
     # Compute role result if not already
-    if get_state("role_result") is None:
-        from dss.analytics.centrality import compute_centralities
-        centrality_table = compute_centralities(G)
-        role_result = compute_roles(G, centrality_table=centrality_table)
-        set_state("role_result", role_result)
-    role_result = get_state("role_result")
-    role_labels_list = [role_result.labels[node] for node in G.nodes()]
-    comm_labels_list = [comm_result.labels[node] for node in G.nodes()]
-    ari = adjusted_rand_score(role_labels_list, comm_labels_list)
-    nmi = normalized_mutual_info_score(role_labels_list, comm_labels_list)
-    st.write(f"Adjusted Rand Index between roles and communities: {ari:.3f}")
-    st.write(f"Normalized Mutual Information: {nmi:.3f}")
+#    if get_state("role_result") is None:
+ #       from dss.analytics.centrality import compute_centralities
+#        centrality_table = compute_centralities(G)
+ #       role_result = compute_roles(G, centrality_table=centrality_table)
+#        set_state("role_result", role_result)
+#    role_result = get_state("role_result")
+#    role_labels_list = [role_result.labels[node] for node in G.nodes()]
+#    comm_labels_list = [comm_result.labels[node] for node in G.nodes()]
+#    ari = adjusted_rand_score(role_labels_list, comm_labels_list)
+#    nmi = normalized_mutual_info_score(role_labels_list, comm_labels_list)
+#    st.write(f"Adjusted Rand Index between roles and communities: {ari:.3f}")
+#    st.write(f"Normalized Mutual Information: {nmi:.3f}")
     
-    import pandas as pd  # imported here to avoid top-level import issues
-    confusion = pd.crosstab(pd.Series(role_labels_list, name="role"), pd.Series(comm_labels_list, name="community"))
-    st.dataframe(confusion)
+#    import pandas as pd  # imported here to avoid top-level import issues
+#    confusion = pd.crosstab(pd.Series(role_labels_list, name="role"), pd.Series(comm_labels_list, name="community"))
+#    st.dataframe(confusion)
 
 
 if __name__ == "__main__":
