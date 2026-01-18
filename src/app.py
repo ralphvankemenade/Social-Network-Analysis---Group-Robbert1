@@ -61,7 +61,7 @@ def main() -> None:
     st.set_page_config(page_title="DSS Social Network Analysis", layout="wide")
     init_state()
 
-    if not require_login(title="Login"):
+    if not require_login(title="Login - Social Network Analysis"):
         return
 
     st.sidebar.title("Navigation")
