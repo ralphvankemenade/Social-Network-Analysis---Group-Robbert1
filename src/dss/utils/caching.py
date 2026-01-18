@@ -5,7 +5,7 @@ and `st.cache_resource`) so that expensive functions could be memoised both
 inside and outside Streamlit.  In order to simplify the codebase and remove
 any reliance on hidden caching mechanisms, the decorators defined here now
 behave as identity functions.  That is, they simply return the original
-function without applying any caching【372834749795475†L130-L135】.  Removing caching
+function without applying any caching.  Removing caching
 avoids the need for hashing and makes the implementation easier to
 understand for educational purposes.
 """
