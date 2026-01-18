@@ -22,7 +22,7 @@ def page() -> None:
         ### Centrality metrics (what do they mean?)
         """)
         
-    col_left, col_right = st.columns([2, 1])
+    col_left, col_right = st.columns([3, 2])
 
     with col_left:
         st.markdown("""
