@@ -169,8 +169,6 @@
 #     page()
 
 
-
-
 """Streamlit page: Centrality analysis.
 
 This page computes a suite of centrality measures, displays them in a
@@ -179,9 +177,8 @@ metrics via a weighted sum or Borda count. Users can download the
 centrality table as CSV.
 
 Layout note:
-- The quick user guide is shown in two columns:
-  - Left: meaning of centrality metrics
-  - Right: weighting scheme + aggregation method explanation
+- The quick user guide is displayed in two columns using HTML/CSS flex.
+  This avoids Streamlit's responsive column stacking for long markdown text.
 """
 
 import streamlit as st
@@ -200,57 +197,104 @@ def page() -> None:
     """Render the Centrality Analysis page."""
     st.set_page_config(page_title="Centrality Analysis", layout="wide")
 
-    # --- Quick user guide (two-column layout) ---
-    # Left column: centrality metrics explanation
-    # Right column: weighting + aggregation explanations
-    col_left, col_right = st.columns([2, 1])
+    # --- Quick user guide (forced two-column layout via HTML flex) ---
+    # Why HTML?
+    # Streamlit's st.columns can collapse into a single column depending on
+    # viewport and content widths. For long explanatory text, flex is more stable.
+    left_html = """
+    <div class="guide-left">
+      <h2>Centrality Analysis - Quick User Guide</h2>
+      <h3>Centrality metrics (what do they mean?)</h3>
 
-    with col_left:
-        st.markdown("""
-        ## Centrality Analysis – Quick User Guide
+      <p><b>Degree</b><br/>
+      How many direct connections does a node have?<br/>
+      High score = very connected or popular.</p>
 
-        ### Centrality metrics (what do they mean?)
+      <p><b>Eigenvector</b><br/>
+      Are you connected to other important nodes?<br/>
+      High score = influence through influential connections.</p>
 
-        **Degree**  
-        How many direct connections does a node have?  
-        High score = very connected or popular.
+      <p><b>Katz</b><br/>
+      How far does your influence reach, directly and indirectly?<br/>
+      High score = strong reach through the network.</p>
 
-        **Eigenvector**  
-        Are you connected to other important nodes?  
-        High score = influence through influential connections.
+      <p><b>Betweenness</b><br/>
+      How often do others need you to connect?<br/>
+      High score = you act as a bridge between groups.</p>
 
-        **Katz**  
-        How far does your influence reach, directly and indirectly?  
-        High score = strong reach through the network.
+      <p><b>Closeness</b><br/>
+      How quickly can you reach everyone else?<br/>
+      High score = centrally located in terms of distance.</p>
 
-        **Betweenness**  
-        How often do others need you to connect?  
-        High score = you act as a bridge between groups.
+      <p><b>PageRank</b><br/>
+      How much important attention flows to you?<br/>
+      High score = prestige or authority in the network.</p>
+    </div>
+    """
 
-        **Closeness**  
-        How quickly can you reach everyone else?  
-        High score = centrally located in terms of distance.
-
-        **PageRank**  
-        How much important attention flows to you?  
-        High score = prestige or authority in the network.
-        """)
-
-    with col_right:
-        st.markdown("""
-        ### Weighting scheme
-
-        Use the sliders to decide **which metrics matter most**.  
+    right_html = """
+    <div class="guide-right">
+      <h3>Weighting scheme</h3>
+      <p>
+        Use the sliders to decide <b>which metrics matter most</b>.<br/>
         Higher weight means more influence on the final score.
+      </p>
 
-        ### Aggregation method
+      <hr/>
 
-        **Weighted sum**  
-        Combines all metrics using your chosen weights.
+      <h3>Aggregation method</h3>
+      <p><b>Weighted sum</b><br/>
+      Combines all metrics using your chosen weights.</p>
 
-        **Borda count**  
-        Ranks nodes per metric and combines the rankings.
-        """)
+      <p><b>Borda count</b><br/>
+      Ranks nodes per metric and combines the rankings.</p>
+    </div>
+    """
+
+    st.markdown(
+        """
+        <style>
+          .guide-wrap {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            width: 100%;
+          }
+          .guide-left {
+            flex: 2;
+            min-width: 520px;
+          }
+          .guide-right {
+            flex: 1;
+            min-width: 320px;
+            padding: 1rem 1.2rem;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+          }
+          .guide-right hr {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.12);
+            margin: 1rem 0;
+          }
+          @media (max-width: 1100px) {
+            .guide-wrap { flex-direction: column; }
+            .guide-left, .guide-right { min-width: 0; }
+          }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        f"""
+        <div class="guide-wrap">
+          {left_html}
+          {right_html}
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # --- Main page title ---
     st.title("Centrality Analysis")
