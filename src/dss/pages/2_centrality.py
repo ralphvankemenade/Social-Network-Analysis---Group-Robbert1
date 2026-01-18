@@ -25,7 +25,9 @@ def page() -> None:
         return
 
     st.markdown("""
-        ## Centrality Analysis – Quick User Guide
+        ---
+        
+        ## Quick User Guide
 
         ### Centrality metrics (what do they mean?)
         """)
