@@ -15,7 +15,6 @@ import networkx as nx
 from sklearn.metrics import pairwise_distances
 from sklearn.cluster import SpectralClustering, AgglomerativeClustering
 import time
-from graphrole import RecursiveFeatureExtractor, RoleExtractor
 
 
 from ..types import RoleResult
@@ -411,13 +410,6 @@ def compute_rolesim_star(G,beta,lambd,maxiter,clustering_method,n_roles,centrali
     return RoleResult(similarity_matrix=similarity, labels=labels, summary=summary)
 
 def compute_rolx(G,n_roles,centrality_table):
-    #'''
-    feature_extractor = RecursiveFeatureExtractor(G)
-    features = feature_extractor.extract_features()
-    role_extractor = RoleExtractor(n_roles=None)
-    role_extractor.extract_role_factors(features)
-    print(role_extractor.roles)
-    #'''
     return 1
 
 def compute_roles(G,method,centralities,info):
