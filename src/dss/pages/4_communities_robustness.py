@@ -137,35 +137,6 @@ def page() -> None:
             title=f"Communities ({method})",
             show_labels=True,
         )
-        import matplotlib.patches as mpatches
-        import matplotlib.lines as mlines
-        import matplotlib.pyplot as plt
-
-# suppose comm_result.labels is node -> community mapping
-        communities = sorted(set(comm_result.labels.values()))
-
-# choose a colormap, tab10 can handle up to 10 colors, tab20 up to 20
-        cmap = plt.get_cmap("tab10")  
-        team_colors = {comm: cmap(i % cmap.N) for i, comm in enumerate(communities)}
-
-# create legend handles for communities
-        team_patches = [
-            mpatches.Patch(color=color, label=f"Community {comm}") 
-            for comm, color in team_colors.items()
-        ]
-
-# add extra legend items if needed (like risky edges)
-        risky_line = mlines.Line2D([], [], color='red', linestyle='dashed', label='Risky edges')
-
-        legend_items = team_patches + [risky_line]
-
-# draw your network as usual
-        node_colors = [team_colors[comm_result.labels[n]] for n in G.nodes()]
-        nx.draw(G, pos, node_color=node_colors, with_labels=True, edge_color="gray")
-
-# add the legend
-        plt.legend(handles=legend_items, loc="upper right")
-        st.pyplot(plt.gcf())
     
     # Show details for selected nodes
     if selected_nodes:
