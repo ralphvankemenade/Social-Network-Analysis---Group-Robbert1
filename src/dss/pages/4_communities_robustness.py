@@ -65,7 +65,7 @@ def page() -> None:
         df_details["community"] = [comm_result.labels[n] for n in selected_nodes]
         # Also show role cluster if available
         if get_state("role_result") is not None:
-           role_result = get_state("role_result")
+            role_result = get_state("role_result")
             df_details["role"] = [role_result.labels[n] for n in selected_nodes]
         st.dataframe(df_details)
     # Robustness analysis
