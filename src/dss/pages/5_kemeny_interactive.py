@@ -172,7 +172,7 @@ def page() -> None:
         col_left, col_right = st.columns([2, 3])
 
         with col_left:
-                §st.markdown("### How does this page work?")
+                st.markdown("### How does this page work?")
                 st.markdown(
                     """
                     This page analyzes the Kemeny constant of the graph, which measures the expected mixing time of a random walk.
