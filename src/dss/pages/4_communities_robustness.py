@@ -151,6 +151,22 @@ def page() -> None:
     if robustness_result is not None:
         st.write(f"Average ARI across runs: {sum(robustness_result.ari_scores) / len(robustness_result.ari_scores):.3f}")
         st.write(f"Average modularity drop: {sum(robustness_result.modularity_drops) / len(robustness_result.modularity_drops):.3f}")
+        col_hist, col_box = st.columns(2)
+
+        with col_hist:
+            display_histogram(
+                robustness_result.ari_scores,
+                title="ARI distribution",
+                xlabel="ARI",
+            )
+
+        with col_box:
+            display_boxplot(
+                robustness_result.modularity_drops,
+                title="Modularity drop distribution",
+                ylabel="ΔQ",
+            )
+        
         display_histogram(robustness_result.ari_scores, title="ARI distribution", xlabel="ARI")
         display_boxplot(robustness_result.modularity_drops, title="Modularity drop distribution", ylabel="ΔQ")
 
