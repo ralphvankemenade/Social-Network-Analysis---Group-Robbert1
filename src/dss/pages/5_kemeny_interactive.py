@@ -161,37 +161,40 @@ def page() -> None:
     st.set_page_config(page_title="Kemeny Analysis", layout="wide")
     st.title("Kemeny Constant and Connectivity Analysis")
 
+
     init_state()
     G = get_state("graph")
     if G is None:
         st.info("No graph loaded. Please upload a `.mtx` file on the Upload page.")
         return
 
-    col_left, col_right = st.columns([2, 3])
+    with st.expander("Quick User Guide", expanded=False):
+        col_left, col_right = st.columns([2, 3])
 
-    with col_left:
-        st.markdown("### How does this page work?")
-        st.markdown(
-            """
-            This page analyzes the Kemeny constant of the graph, which measures the expected mixing time of a random walk.
-            When we remove an edge in between two nodes, the Kemeny constant changes.
-            Depending on the change, we find that the respective connection was deemed as important to the graph.
-            Specifically:
-
-            - The (steep) decrease of Kemeny applies that a bottleneck of the system has been removed and the average information traversal time has decreased.
-            - The (steep) increase of Kemeny applies an important connection has been removed and the average information traversal time has increased.
-            """
-        )
-    with col_right:
-        display_network(
-            G,
-            node_size=None,
-            node_color=None,
-            highlight=[],
-            title="Original graph",
-            show_labels=True,
-            removed_edges=None,
-        )
+        with col_left:
+                st.markdown("### How does this page work?")
+                st.markdown(
+                    """
+                    This page analyzes the Kemeny constant of the graph, which measures the expected mixing time of a random walk.
+                    When we remove an edge in between two nodes, the Kemeny constant changes.
+                    Depending on the change, we find that the respective connection was deemed as important to the graph.
+                    Specifically:
+        
+                    - The (steep) decrease of Kemeny applies that a bottleneck of the system has been removed and the average information traversal time has decreased.
+                    - The (steep) increase of Kemeny applies an important connection has been removed and the average information traversal time has increased.
+                    """
+                )
+        with col_right:
+                display_network(
+                    G,
+                    node_size=None,
+                    node_color=None,
+                    # highlight=[],
+                    highlight_selected=[],
+                    title="Original graph",
+                    show_labels=True,
+                    removed_edges=None,
+                )
 
     st.subheader("Remove edges and observe effect on Kemeny")
     recompute_on_largest = st.checkbox("Recompute on largest component if disconnected", value=True)
@@ -332,7 +335,8 @@ def page() -> None:
             H,
             node_size=None,
             node_color=None,
-            highlight=[],
+            # highlight=[],
+            highlight_selected=[],
             title="Graph after edge removals",
             show_labels=True,
             removed_edges=ordered_edges,

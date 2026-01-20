@@ -15,11 +15,20 @@ from dss.analytics.communities import compute_communities
 def page() -> None:
     st.set_page_config(page_title="Role Analysis", layout="wide")
     st.title("Role Identification via Similarity Clustering")
+
     init_state()
     G = get_state("graph")
     if G is None:
         st.info("No graph loaded.  Please upload a `.mtx` file on the Upload page.")
         return
+
+    with st.expander("Quick User Guide", expanded=False):
+        st.markdown(
+            """
+         
+            """,
+        )
+    
     # Sidebar parameters
     st.sidebar.header("Role identification methods")
     method = st.sidebar.selectbox("Method", ["Cooper and Barahona", "RoleSim", "RoleSim*", "RolX"], index=0)
@@ -72,7 +81,6 @@ def page() -> None:
     else:
         role_result = get_state("role_result")
     '''
-
     compute_button = st.sidebar.button("Compute roles")
     if compute_button or get_state("role_result") is None:
         # Compute centralities for summary statistics
@@ -87,67 +95,78 @@ def page() -> None:
     else:
         role_result = get_state("role_result")
 
-    # Display similarity heatmap
-    st.subheader("Role similarity heatmap")
     if method == "RolX":
-        st.text('RolX does not compute similarity scores in such a manner that role similarity can be compared in the usual form')
+        st.text("RolX does not yet work in the current iteration of this DSS.")
     else:
-        display_heatmap(role_result.similarity_matrix, list(G.nodes()), caption="Role similarity")
-    # Display role summary
-    st.subheader("Role cluster summary")
-    st.dataframe(role_result.summary)
-    # Colour map for roles
-    role_colors = {node: role_result.labels[node] for node in G.nodes()}
-    # Plot network coloured by roles with labels and interactive highlights
-    st.subheader("Network coloured by roles")
-    # Node selection for highlight and inspection
-    st.sidebar.subheader("Select nodes to inspect")
-    selected_nodes = st.sidebar.multiselect(
-        "Nodes", options=list(G.nodes()), default=[]
-    )
-    # Highlight nodes that are selected
-    highlight_nodes = selected_nodes
-    display_network(
-        G,
-        node_color=role_colors,
-        highlight=highlight_nodes,
-        title="Roles",
-        show_labels=True,
-    )
-    # Show details for selected nodes
-    if selected_nodes:
-        st.subheader("Selected node details")
-        # Build a DataFrame with role label and basic centrality measures
-        centralities = compute_centralities(G)
-        data = centralities.loc[selected_nodes].copy()
-        data["role_cluster"] = [role_result.labels[n] for n in selected_nodes]
-        st.dataframe(data)
-
-        
-    # Compare roles to communities if available
-    st.subheader("Comparison with community clustering")
-    comm_method = st.selectbox("Community method for comparison", ["louvain", "girvan_newman", "spectral"], index=0)
-    # Compute community result (cached per method)
-    if get_state("community_results").get(comm_method) is None:
-        comm_result = compute_communities(G, method=comm_method, k=2)
-        get_state("community_results")[comm_method] = comm_result
-    comm_result = get_state("community_results")[comm_method]
-    # Compute ARI and NMI between role labels and community labels
-    role_labels_list = [role_result.labels[node] for node in G.nodes()]
-    comm_labels_list = [comm_result.labels[node] for node in G.nodes()]
-    ari = adjusted_rand_score(role_labels_list, comm_labels_list)
-    nmi = normalized_mutual_info_score(role_labels_list, comm_labels_list)
-    st.write(f"Adjusted Rand Index between roles and communities: {ari:.3f}")
-    st.write(f"Normalized Mutual Information: {nmi:.3f}")
-    # Confusion matrix
-    df_conf = pd.DataFrame(
-        {
-            "role": role_labels_list,
-            "community": comm_labels_list,
-        }
-    )
-    confusion = pd.crosstab(df_conf["role"], df_conf["community"])
-    st.dataframe(confusion)
+        # Display similarity heatmap
+        st.subheader("Role similarity heatmap")
+        if method == "RolX":
+            st.text('RolX does not compute similarity scores in such a manner that role similarity can be compared in the usual form')
+        else:
+            display_heatmap(role_result.similarity_matrix, list(G.nodes()), caption="Role similarity")
+        # Display role summary
+        st.subheader("Role cluster summary")
+        st.dataframe(role_result.summary)
+        # Colour map for roles
+        role_colors = {node: role_result.labels[node] for node in G.nodes()}
+        # Plot network coloured by roles with labels and interactive highlights
+        st.subheader("Network coloured by roles")
+        # Node selection for highlight and inspection
+        st.sidebar.subheader("Select nodes to inspect")
+        selected_nodes = st.sidebar.multiselect(
+            "Nodes", options=list(G.nodes()), default=[]
+        )
+        # Highlight nodes that are selected
+        # highlight_nodes = selected_nodes
+        highlight_nodes_selected = list(selected_nodes)
+        # display_network(
+        #     G,
+        #     node_color=role_colors,
+        #     highlight=highlight_nodes,
+        #     title="Roles",
+        #     show_labels=True,
+        # )
+        display_network(
+            G,
+            node_color=role_colors,
+            highlight_selected=highlight_nodes_selected,
+            title="Roles",
+            show_labels=True,
+        )
+        # Show details for selected nodes
+        if selected_nodes:
+            st.subheader("Selected node details")
+            # Build a DataFrame with role label and basic centrality measures
+            centralities = compute_centralities(G)
+            data = centralities.loc[selected_nodes].copy()
+            data["role_cluster"] = [role_result.labels[n] for n in selected_nodes]
+            st.dataframe(data)
+    
+            
+        # Compare roles to communities if available
+        st.subheader("Comparison with community clustering")
+        comm_method = st.selectbox("Community method for comparison", ["louvain", "girvan_newman", "spectral"], index=0)
+        # Compute community result (cached per method)
+        if get_state("community_results").get(comm_method) is None:
+            comm_result = compute_communities(G, method=comm_method, k=2)
+            get_state("community_results")[comm_method] = comm_result
+        comm_result = get_state("community_results")[comm_method]
+        # Compute ARI and NMI between role labels and community labels
+        role_labels_list = [role_result.labels[node] for node in G.nodes()]
+        comm_labels_list = [comm_result.labels[node] for node in G.nodes()]
+        ari = adjusted_rand_score(role_labels_list, comm_labels_list)
+        nmi = normalized_mutual_info_score(role_labels_list, comm_labels_list)
+        st.write(f"Adjusted Rand Index between roles and communities: {ari:.3f}")
+        st.write(f"Normalized Mutual Information: {nmi:.3f}")
+        # Confusion matrix
+        df_conf = pd.DataFrame(
+            {
+                "role": role_labels_list,
+                "community": comm_labels_list,
+            }
+        )
+        confusion = pd.crosstab(df_conf["role"], df_conf["community"])
+        st.dataframe(confusion)
 
 
 if __name__ == "__main__":

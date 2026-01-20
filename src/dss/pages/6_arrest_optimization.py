@@ -98,18 +98,13 @@ def page() -> None:
     if G is None:
         st.info("No graph loaded.  Please upload a `.mtx` file on the Upload page.")
         return
-    with st.expander("Quick User Guide", expanded=False):
-        col_left, col_right = st.columns([3, 2], gap="large")
 
-        with col_left:
-            st.markdown("### Arrest optimization Summary")
-                        
-            st.markdown("### Optimisation results")
-            
-            st.markdown(
-        """          
-        **Objective value**   
-        This value value indicates how good the optimisation run is. Higher values mean a better result.  
+    with st.expander("Quick User Guide", expanded=False):
+        st.markdown(
+            """
+         
+            """,
+        )
     
         **Estimated number of effective arrests**   
         The effective arrests are  the number of arrests possible that realistically can be carried out, considering the cross department edges.  
@@ -149,10 +144,10 @@ def page() -> None:
 
     # Sidebar parameters
     st.sidebar.header("Optimisation parameters")
-    comm_method_labels = {
-                "Louvain": "louvain",
+    comm_method_labels = {"Spectral": "spectral",
                 "Girvan Newman": "girvan_newman",
-                "Spectral": "spectral"}
+                "Louvain": "louvain"
+                }
     comm_label = st.sidebar.selectbox("Community method", list(comm_method_labels.keys()), index=0, help ="Select the method that detects the communities in the network.")
     comm_method = comm_method_labels[comm_label]
     alpha = st.sidebar.slider("Importance Communities (alpha)", 0.0, 5.0, 1.0, 0.1,help="How important it is to keep members of the same community together. Higher values make the model more likely to keep them together.")
@@ -237,6 +232,7 @@ def page() -> None:
         # assigned to different departments are coloured differently.  Labels
         # allow you to identify specific individuals.
         dept_colors = {node: arrest_result.assignment[node] for node in G.nodes()}
+        highlight_nodes_selected = list(selected_nodes)
         display_network(
             G,
             node_color=dept_colors,
@@ -244,7 +240,8 @@ def page() -> None:
             #add risky edges to plot 
             removed_edges=arrest_result.risk_edges,
             show_labels=True,
-            highlight=selected_nodes
+            # highlight=selected_nodes
+            highlight_selected=highlight_nodes_selected,
         )
 
         team_colors = { 0: "#440154", 1: "#FDE725" }

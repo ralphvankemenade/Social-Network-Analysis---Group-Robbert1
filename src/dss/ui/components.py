@@ -19,10 +19,12 @@ from ..graph.layouts import compute_layout
 #     G,
 #     node_size: Optional[Dict[Any, float]] = None,
 #     node_color: Optional[Dict[Any, float]] = None,
+#     edge_color: Optional[Dict[Tuple[Any, Any], float]] = None,
 #     highlight: Optional[Iterable[Any]] = None,
 #     title: Optional[str] = None,
 #     show_labels: bool = True,
 #     label_dict: Optional[Dict[Any, str]] = None,
+#     removed_edges: Optional[Iterable[Tuple[Any, Any]]] = None,
 # ) -> None:
 #     """Render a network graph using Streamlit.
 
@@ -31,22 +33,26 @@ from ..graph.layouts import compute_layout
 #     G: networkx.Graph
 #         The graph to render.
 #     node_size: dict, optional
-#         Mapping from node to size.  Values are scaled internally.
+#         Mapping from node to size. Values are scaled internally.
 #     node_color: dict, optional
-#         Mapping from node to colour value.  Values are mapped to a colour scale.
+#         Mapping from node to color value. Values are mapped to a color scale.
 #     highlight: iterable, optional
 #         Nodes to highlight with a red border.
 #     title: str, optional
 #         Title for the plot.
 #     show_labels: bool, optional
-#         If True, draw labels on nodes.  Font sizes adjust automatically.
+#         If True, draw labels on nodes. Font sizes adjust automatically.
 #     label_dict: dict, optional
 #         Custom labels for nodes; defaults to node identifiers.
+#     removed_edges: iterable of (u, v), optional
+#         Edges to overlay as visually "removed" (drawn as dashed red lines).
+#         Useful when you want to keep the overall structure visible while
+#         clearly indicating which connections were removed.
 #     """
 #     if G is None or G.number_of_nodes() == 0:
 #         st.info("No graph loaded.")
 #         return
-#     # Compute a deterministic layout.  For interactive use the layout is
+#     # Compute a deterministic layout. For interactive use the layout is
 #     # cached across calls, but caching is disabled in this simplified version.
 #     pos = compute_layout(G)
 #     fig = plot_network(
@@ -54,10 +60,12 @@ from ..graph.layouts import compute_layout
 #         pos,
 #         node_size=node_size,
 #         node_color=node_color,
+#         edge_color=edge_color,
 #         highlight_nodes=highlight,
 #         title=title,
 #         show_labels=show_labels,
 #         label_dict=label_dict,
+#         removed_edges=removed_edges,
 #     )
 #     st.pyplot(fig)
 
@@ -67,7 +75,8 @@ def display_network(
     node_size: Optional[Dict[Any, float]] = None,
     node_color: Optional[Dict[Any, float]] = None,
     edge_color: Optional[Dict[Tuple[Any, Any], float]] = None,
-    highlight: Optional[Iterable[Any]] = None,
+    highlight_top: Optional[Iterable[Any]] = None,
+    highlight_selected: Optional[Iterable[Any]] = None,
     title: Optional[str] = None,
     show_labels: bool = True,
     label_dict: Optional[Dict[Any, str]] = None,
@@ -83,8 +92,14 @@ def display_network(
         Mapping from node to size. Values are scaled internally.
     node_color: dict, optional
         Mapping from node to color value. Values are mapped to a color scale.
-    highlight: iterable, optional
-        Nodes to highlight with a red border.
+    edge_color: dict, optional
+        Mapping from edge (u, v) to numeric color value (e.g. delta Kemeny).
+    highlight_top: iterable, optional
+        Nodes to highlight as "important" (for example Top N or Bottom N).
+        These will be rendered using the default highlight style (red outline).
+    highlight_selected: iterable, optional
+        Nodes selected by the user (for example via a multiselect).
+        These will be rendered using the selected highlight style (pink).
     title: str, optional
         Title for the plot.
     show_labels: bool, optional
@@ -99,21 +114,26 @@ def display_network(
     if G is None or G.number_of_nodes() == 0:
         st.info("No graph loaded.")
         return
-    # Compute a deterministic layout. For interactive use the layout is
-    # cached across calls, but caching is disabled in this simplified version.
+
+    # Compute a deterministic layout. For interactive use the layout is typically cached
+    # across calls (so node positions remain stable), but caching may be handled elsewhere.
     pos = compute_layout(G)
+
+    # Delegate all drawing decisions to plot_network, including highlight styling.
     fig = plot_network(
         G,
         pos,
         node_size=node_size,
         node_color=node_color,
         edge_color=edge_color,
-        highlight_nodes=highlight,
+        highlight_nodes=highlight_top,
+        highlight_nodes_selected=highlight_selected,
         title=title,
         show_labels=show_labels,
         label_dict=label_dict,
         removed_edges=removed_edges,
     )
+
     st.pyplot(fig)
 
 

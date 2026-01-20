@@ -21,10 +21,67 @@ from dss.ui.components import display_network
 def page() -> None:
     st.set_page_config(page_title="Upload & Overview", layout="wide")
     st.title("Upload & Overview")
+
+    with st.expander("Quick User Guide", expanded=False):
+        st.markdown(
+            """
+                ### Welcome
+                
+                This dashboard allows you to analyze network structures using advanced graph-based methods.  
+                Everything starts by uploading a network file.
+                
+                ---
+                
+                ### What to upload
+                
+                Upload a **Matrix Market (.mtx)** file that represents a network adjacency matrix.
+                
+                - Each row and column corresponds to a node  
+                - Non-zero values indicate connections between nodes  
+                
+                ---
+                
+                ### What happens next
+                
+                After uploading the file:
+                
+                - The network is automatically loaded and validated  
+                - All analysis pages in the navigation menu become available  
+                - Centrality, roles, communities, robustness, and optimization analyses can be performed  
+                
+                ---
+                
+                ### No file uploaded yet
+                
+                If no file is uploaded, the analysis pages remain inactive.  
+                Once a valid `.mtx` file is provided, you can immediately continue with the next steps.
+                
+                ---
+                
+                ### Tip
+                
+                If you are unsure about the file format or interpretation of results, consult the **User Manual** in the navigation menu for detailed explanations and examples.
+            """
+        )
+
     # Initialise session state
     init_state()
     # File uploader
-    uploaded_file = st.file_uploader("Upload a Matrix Market (.mtx) file", type=["mtx"])
+    # uploaded_file = st.file_uploader("Upload a Matrix Market (.mtx) file", type=["mtx"])
+    uploaded_file = st.file_uploader(
+        "Upload a Matrix Market (.mtx) file",
+        type=["mtx"],
+        help="""
+    What is a .mtx file?
+    Upload a Matrix Market (.mtx) file representing a network adjacency matrix.
+    
+    Rows and columns correspond to nodes; non-zero entries indicate connections.
+    
+    After upload, the graph will be loaded and all analysis pages become available.
+    """
+    )
+
+
     if uploaded_file is not None:
         try:
             # Load adjacency matrix
@@ -54,7 +111,11 @@ def page() -> None:
                 st.info("Graph is not connected.  Analyses will operate on the entire graph but some metrics (e.g. Kemeny) will use the largest component.")
             # Plot the graph
             st.subheader("Network Graph")
-            display_network(G, title="Base network")
+            
+            col_left, col_right = st.columns([3, 2], gap="large")
+            with col_left:
+                display_network(G, title="Base network")
+                
         except Exception as e:
             st.error(f"Failed to load network: {e}")
     else:
