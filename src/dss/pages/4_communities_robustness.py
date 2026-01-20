@@ -17,8 +17,6 @@ def page() -> None:
 
     with st.expander("Quick User Guide", expanded=False):
         st.markdown("""
-        ## Community Clustering – Quick User Guide
-    
         ### Clustering Guide
         """)
             
