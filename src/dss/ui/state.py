@@ -18,9 +18,16 @@ def init_state() -> None:
         "centrality_table": None,
         "centrality_result": None,
         "role_result": None,
-        "community_results": {},  # keyed by method
+        "community_results": {},
         "kemeny_result": None,
         "arrest_result": None,
+    
+        # Upload persistence within the session
+        "mtx_name": None,
+        "mtx_bytes": None,
+        "mtx_sha256": None,
+        "adjacency_bytes": None,
+    
         # Auth
         "auth_ok": False,
         "auth_user": None,
