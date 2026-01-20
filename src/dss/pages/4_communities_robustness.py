@@ -109,6 +109,21 @@ def page() -> None:
     # Network plot coloured by communities with node selection
     community_colors = {node: comm_result.labels[node] for node in G.nodes()}
     st.subheader("Network coloured by communities")
+    
+    # Robustness analysis
+    st.subheader("Robustness analysis")
+    runs = st.sidebar.slider("Number of perturbation runs", 10, 100, 50)
+    p = st.sidebar.slider("Fraction of edges to remove", 0.01, 0.30, 0.05, 0.01)
+    if st.sidebar.button("Run robustness test"):
+        robustness_result = perturbation_test(G, method=method, p=p, runs=runs, k=(k or 2))
+        set_state("robustness_result", robustness_result)
+    robustness_result = get_state("robustness_result")
+    if robustness_result is not None:
+        st.write(f"Average ARI across runs: {sum(robustness_result.ari_scores) / len(robustness_result.ari_scores):.3f}")
+        st.write(f"Average modularity drop: {sum(robustness_result.modularity_drops) / len(robustness_result.modularity_drops):.3f}")
+        display_histogram(robustness_result.ari_scores, title="ARI distribution", xlabel="ARI")
+        display_boxplot(robustness_result.modularity_drops, title="Modularity drop distribution", ylabel="ΔQ")
+
     # Allow user to select nodes for inspection
     st.sidebar.subheader("Select nodes to inspect")
     selected_nodes = st.sidebar.multiselect(
@@ -135,19 +150,6 @@ def page() -> None:
             role_result = get_state("role_result")
             df_details["role"] = [role_result.labels[n] for n in selected_nodes]
         st.dataframe(df_details)
-    # Robustness analysis
-    st.subheader("Robustness analysis")
-    runs = st.sidebar.slider("Number of perturbation runs", 10, 100, 50)
-    p = st.sidebar.slider("Fraction of edges to remove", 0.01, 0.30, 0.05, 0.01)
-    if st.sidebar.button("Run robustness test"):
-        robustness_result = perturbation_test(G, method=method, p=p, runs=runs, k=(k or 2))
-        set_state("robustness_result", robustness_result)
-    robustness_result = get_state("robustness_result")
-    if robustness_result is not None:
-        st.write(f"Average ARI across runs: {sum(robustness_result.ari_scores) / len(robustness_result.ari_scores):.3f}")
-        st.write(f"Average modularity drop: {sum(robustness_result.modularity_drops) / len(robustness_result.modularity_drops):.3f}")
-        display_histogram(robustness_result.ari_scores, title="ARI distribution", xlabel="ARI")
-        display_boxplot(robustness_result.modularity_drops, title="Modularity drop distribution", ylabel="ΔQ")
     # Compare to roles
 #    st.subheader("Comparison with role clustering")
     # Compute role result if not already
