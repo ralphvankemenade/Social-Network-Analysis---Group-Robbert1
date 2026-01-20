@@ -21,6 +21,13 @@ from dss.ui.components import display_network
 def page() -> None:
     st.set_page_config(page_title="Upload & Overview", layout="wide")
     st.title("Upload & Overview")
+
+    with st.expander("Quick User Guide", expanded=False):
+        st.markdown(
+            """
+         
+            """,
+        )
     # Initialise session state
     init_state()
     # File uploader
