@@ -31,7 +31,7 @@ def page() -> None:
     # Initialise session state
     init_state()
     # File uploader
-    uploaded_file = st.file_uploader("Upload a Matrix Market (.mtx) file", type=["mtx"])
+    uploaded_file = st.file_uploader("Upload a Matrix Market (.mtx) file", type=["mtx"], help="TESTTETSTSTSTSTS")
     if uploaded_file is not None:
         try:
             # Load adjacency matrix
