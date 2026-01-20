@@ -121,6 +121,8 @@ def page() -> None:
                     **Weighting scheme**  
                     Use the sliders to decide which metrics matter most.  
                     Higher weight means more influence on the final score.
+
+                    ---
                     
                     **Aggregation method**
                     
