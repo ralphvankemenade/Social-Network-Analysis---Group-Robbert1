@@ -149,8 +149,8 @@ def page() -> None:
     st.subheader("Robustness analysis")
     st.write("Click on Run Robustness Test in the side bar to (re)run robustness test")
     if robustness_result is not None:
-        st.write(f"Average ARI across runs: {sum(robustness_result.ari_scores) / len(robustness_result.ari_scores):.3f}")
-        st.write(f"Average modularity drop: {sum(robustness_result.modularity_drops) / len(robustness_result.modularity_drops):.3f}")
+        st.write(f"Average ARI across runs: {sum(robustness_result.ari_scores) / len(robustness_result.ari_scores):.3f}", help = "ARI close to 1 = Very Robust ; ARI close to 0 = Not robust")
+        st.write(f"Average modularity drop: {sum(robustness_result.modularity_drops) / len(robustness_result.modularity_drops):.3f}", help = "Average drop in modularity")
         col_hist, col_box = st.columns(2)
 
         with col_hist:
