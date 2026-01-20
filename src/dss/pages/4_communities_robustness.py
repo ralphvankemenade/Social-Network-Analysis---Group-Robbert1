@@ -167,9 +167,6 @@ def page() -> None:
                 ylabel="ΔQ",
             )
         
-        display_histogram(robustness_result.ari_scores, title="ARI distribution", xlabel="ARI")
-        display_boxplot(robustness_result.modularity_drops, title="Modularity drop distribution", ylabel="ΔQ")
-
     # Compare to roles
 #    st.subheader("Comparison with role clustering")
     # Compute role result if not already
