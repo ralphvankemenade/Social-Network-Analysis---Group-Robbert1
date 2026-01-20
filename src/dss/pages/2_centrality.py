@@ -132,6 +132,8 @@ def page() -> None:
                     **Borda count**  
                     Ranks nodes per metric and combines the rankings.  
                     Useful if you care about rank agreement rather than raw score magnitude.
+
+                    ---
                     """
             )
 
