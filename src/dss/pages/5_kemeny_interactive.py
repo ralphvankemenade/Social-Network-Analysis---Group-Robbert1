@@ -162,9 +162,9 @@ def page() -> None:
     st.title("Kemeny Constant and Connectivity Analysis")
 
     with st.expander("Quick User Guide", expanded=False):
-            col_left, col_right = st.columns([2, 3])
+        col_left, col_right = st.columns([2, 3])
 
-            with col_left:
+        with col_left:
                 st.markdown("### How does this page work?")
                 st.markdown(
                     """
@@ -177,7 +177,7 @@ def page() -> None:
                     - The (steep) increase of Kemeny applies an important connection has been removed and the average information traversal time has increased.
                     """
                 )
-            with col_right:
+        with col_right:
                 display_network(
                     G,
                     node_size=None,
