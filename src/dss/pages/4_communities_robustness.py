@@ -111,7 +111,6 @@ def page() -> None:
     st.subheader("Network coloured by communities")
         
     # Robustness analysis
-    st.subheader("Robustness analysis")
     runs = st.sidebar.slider("Number of perturbation runs", 10, 100, 50)
     p = st.sidebar.slider("Fraction of edges to remove", 0.01, 0.30, 0.05, 0.01)
     if st.sidebar.button("Run robustness test"):
@@ -145,7 +144,8 @@ def page() -> None:
             role_result = get_state("role_result")
             df_details["role"] = [role_result.labels[n] for n in selected_nodes]
         st.dataframe(df_details)
-
+        
+    st.subheader("Robustness analysis")
     if robustness_result is not None:
         st.write(f"Average ARI across runs: {sum(robustness_result.ari_scores) / len(robustness_result.ari_scores):.3f}")
         st.write(f"Average modularity drop: {sum(robustness_result.modularity_drops) / len(robustness_result.modularity_drops):.3f}")
