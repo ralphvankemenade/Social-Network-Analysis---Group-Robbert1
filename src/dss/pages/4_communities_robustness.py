@@ -14,64 +14,68 @@ from dss.analytics.roles import compute_roles
 def page() -> None:
     st.set_page_config(page_title="Community Clustering", layout="wide")
     st.title("Community Clustering")
-    st.markdown("""
-    ## Community Clustering – Quick User Guide
 
-    ### Clustering Guide
-    """)
-        
-    col_left, col_right = st.columns([3, 2])
-
-    with col_left:
+    with st.expander("Quick User Guide", expanded=False):
         st.markdown("""
-        ### Community Summary
-        
-        **Modularity Q Score**  
-        A measure of how well a network is partitioned into communities. 
-        Value close to 1: indicates strong community structure.
-        Value close to 0: indicates weak community structure.
-        
-        **Within Ratio**  
-        A measure of how internally connected the communities are, as oposed to connections outside of the community.
-        High within ratio: Community mostly communicates within the community.
-        Low within ratio: Community interacts heavily with other communities.
-        
-        ### Clustering Methods
-        
-        **Girvan-Newman**  
-        Detects communities by repeatedly removing edges with high betweenness centrality, which act as bridges between groups. 
-        As these bridging edges are removed, the network splits into increasingly well-defined communities. 
-        The amount of communities to be distinct can be adjusted.
-        
-        **Spectral**  
-        Identifies communities by using the eigenvectors of the graph Laplacian to partition the network into weakly connected groups. 
-        It is based on minimizing a graph-cut objective and is effective at revealing global structure in the network. 
-        The amount of communities to be distinct can be adjusted.
-        
-        **Louvain**  
-        Detects communities by iteratively grouping nodes to maximize the modularity Q score. 
-        It is well suited for large networks and produces a hierarchical community structure.
-        Because the Louvain method maximizes modularity it can not be used to set a number for the amount of communities you want to distinct. 
-        Therefore it may make a distinction between more than two communities.
+        ## Community Clustering – Quick User Guide
+    
+        ### Clustering Guide
         """)
-    with col_right:
-        st.markdown("""
-        
-        ### Robustness Analysis
-        
-        Robustness analysis evaluates how stable the results of a network analysis are when the network is slightly altered or when different methods are applied. 
-        A robust result indicates that the identified structure reflects meaningful patterns rather than noise or modeling choices.
-        
-        **Perturbation Test**  
-        Assesses robustness by deliberately introducing small changes to the network, in this case removing some of the edges, and re-running the analysis. 
-        If the results remain largely unchanged, the detected structure is considered robust.
-        
-        **Adjusted Rand Index (ARI)**  
-        Measures the similarity between two clusterings while correcting for simularities that could occur by chance. 
-        In this context, it is used to quantify how consistently communities are identified under network perturbations. 
-        ARI close to 1 = Robust method of community clustering.
-        ARI close to 0 = Community completely changes when perturbation test is applied
-        """)
+            
+        col_left, col_right = st.columns([3, 2])
+    
+        with col_left:
+            st.markdown("""
+            ### Community Summary
+            
+            **Modularity Q Score**  
+            A measure of how well a network is partitioned into communities. 
+            Value close to 1: indicates strong community structure.
+            Value close to 0: indicates weak community structure.
+            
+            **Within Ratio**  
+            A measure of how internally connected the communities are, as oposed to connections outside of the community.
+            High within ratio: Community mostly communicates within the community.
+            Low within ratio: Community interacts heavily with other communities.
+            
+            ### Clustering Methods
+            
+            **Girvan-Newman**  
+            Detects communities by repeatedly removing edges with high betweenness centrality, which act as bridges between groups. 
+            As these bridging edges are removed, the network splits into increasingly well-defined communities. 
+            The amount of communities to be distinct can be adjusted.
+            
+            **Spectral**  
+            Identifies communities by using the eigenvectors of the graph Laplacian to partition the network into weakly connected groups. 
+            It is based on minimizing a graph-cut objective and is effective at revealing global structure in the network. 
+            The amount of communities to be distinct can be adjusted.
+            
+            **Louvain**  
+            Detects communities by iteratively grouping nodes to maximize the modularity Q score. 
+            It is well suited for large networks and produces a hierarchical community structure.
+            Because the Louvain method maximizes modularity it can not be used to set a number for the amount of communities you want to distinct. 
+            Therefore it may make a distinction between more than two communities.
+            """)
+        with col_right:
+            st.markdown("""
+            
+            ### Robustness Analysis
+            
+            Robustness analysis evaluates how stable the results of a network analysis are when the network is slightly altered or when different methods are applied. 
+            A robust result indicates that the identified structure reflects meaningful patterns rather than noise or modeling choices.
+            
+            **Perturbation Test**  
+            Assesses robustness by deliberately introducing small changes to the network, in this case removing some of the edges, and re-running the analysis. 
+            If the results remain largely unchanged, the detected structure is considered robust.
+            
+            **Adjusted Rand Index (ARI)**  
+            Measures the similarity between two clusterings while correcting for simularities that could occur by chance. 
+            In this context, it is used to quantify how consistently communities are identified under network perturbations. 
+            ARI close to 1 = Robust method of community clustering.
+            ARI close to 0 = Community completely changes when perturbation test is applied
+            """)
+    
+    
         
     init_state()
     G = get_state("graph")
