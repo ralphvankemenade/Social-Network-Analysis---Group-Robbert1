@@ -103,14 +103,14 @@ def page() -> None:
     combined_scores = result.combined_scores
     ranks = result.ranks
     st.subheader("Centrality measures", help="""
-        This table shows the centrality scores per node.
-        
-        Each column is one centrality metric.
-        The 'combined' column is the final aggregated score based on the settings in the sidebar.
-        
-        Tip:
-        Sort by 'combined' to see which nodes are most central according to your chosen method.
-        """,
+This table shows the centrality scores per node.
+
+Each column is one centrality metric.
+The 'combined' column is the final aggregated score based on the settings in the sidebar.
+
+Tip:
+Sort by 'combined' to see which nodes are most central according to your chosen method.
+"""
     )
     weight_inputs = {}
 
