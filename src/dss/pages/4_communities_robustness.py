@@ -143,25 +143,25 @@ Selected nodes will:
     col_stats, col_plot = st.columns(2)
     with col_stats:
         st.subheader("Community summary", help= """
-        Size = Amount of nodes in cluster
-        Within Ratio = A measure of how internally connected the communities are, as oposed to connections outside of the community. 
-        High within ratio: Community mostly communicates within the community. 
-        Low within ratio: Community interacts heavily with other communities.
-        """)
+Size = Amount of nodes in cluster
+Within Ratio = A measure of how internally connected the communities are, as oposed to connections outside of the community. 
+High within ratio: Community mostly communicates within the community. 
+Low within ratio: Community interacts heavily with other communities.
+""")
         st.write(f"Modularity Q: {comm_result.modularity:.3f}", help="""
-        A measure of how well a network is partitioned into communities. 
-        Value close to 1: indicates strong community structure. 
-        Value close to 0: indicates weak community structure.
-        """
-        ))
+A measure of how well a network is partitioned into communities. 
+Value close to 1: indicates strong community structure. 
+Value close to 0: indicates weak community structure.
+        """)
+        )
         st.dataframe(comm_result.summary)
         
     with col_plot:
         # Network plot coloured by communities with node selection
         community_colors = {node: comm_result.labels[node] for node in G.nodes()}
         st.subheader("Network coloured by communities", help= """
-        Visualisation of clustered network with selected method and parameters.
-        Different colors represent different communities.
+Visualisation of clustered network with selected method and parameters.
+Different colors represent different communities.
         """)   
         display_network(
             G,
@@ -192,14 +192,14 @@ Selected nodes will:
     st.write("Click on Run Robustness Test in the side bar to (re)run robustness test")
     if robustness_result is not None:
         st.write(f"Average ARI across runs: {sum(robustness_result.ari_scores) / len(robustness_result.ari_scores):.3f}", help= """
-        Measures the similarity between two clusterings while correcting for simularities that could occur by chance. 
-        In this context, it is used to quantify how consistently communities are identified under network perturbations. 
+Measures the similarity between two clusterings while correcting for simularities that could occur by chance. 
+In this context, it is used to quantify how consistently communities are identified under network perturbations. 
         
-        ARI close to 1 = Robust method of community clustering. 
-        ARI close to 0 = Community completely changes when perturbation test is applied
+ARI close to 1 = Robust method of community clustering. 
+ARI close to 0 = Community completely changes when perturbation test is applied
         """)
         st.write(f"Average modularity drop: {sum(robustness_result.modularity_drops) / len(robustness_result.modularity_drops):.3f}", help= """
-        Average drop in modularity when perturbation test is applied.
+Average drop in modularity when perturbation test is applied.
         """)
         col_hist, col_box = st.columns(2)
 
