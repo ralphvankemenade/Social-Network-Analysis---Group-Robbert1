@@ -300,7 +300,7 @@ Selected nodes will:
                     arrest_order_df,
                     arrest_result.risk_edges,
                 )
-        st.subheader("Recommended arrest order", help ="The order of the arrest has effect on the number of possible arrests, based on the centrality score and the number of risky edges.") 
+        st.subheader("Recommended arrest order", help ="The order of the arrest has effect on the number of possible arrests. This is based on the centrality score and the number of risky edges.") 
         col_left, col_right = st.columns([2, 2], gap="large") 
         with col_right:
             st.write(
