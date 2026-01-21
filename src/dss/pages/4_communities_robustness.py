@@ -168,40 +168,13 @@ Different colors represent different communities.
 """
                     )   
         
-        
-        comm_colors = {
-        0: "#440154",
-        1: "#FDE725",
-        }
-
-        # Assign actual colors to nodes
-        community_colors = {
-            node: comm_colors[comm_result.labels[node]]
-            for node in G.nodes()
-        }
-
-        # Create legend handles
-        legend_items = [
-            mpatches.Patch(color=color, label=f"Community {comm + 1}")
-            for comm, color in comm_colors.items()
-        ]
-
         display_network(
             G,
             node_color=community_colors,
             highlight_selected=highlight_nodes_selected,
             title=f"Communities ({method})",
             show_labels=True,
-            legend_items=legend_items,
         )
-        
-       # display_network(
-       #     G,
-      #      node_color=community_colors,
-       #     highlight_selected=highlight_nodes_selected,
-      #      title=f"Communities ({method})",
-       #     show_labels=True,
-      #  )
     
     # Show details for selected nodes
     if selected_nodes:
