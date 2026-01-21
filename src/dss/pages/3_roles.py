@@ -99,6 +99,14 @@ def page() -> None:
                 """
 
             )
+            st.markdown("#### Leader rankings")
+            st.markdown(
+                """
+                This part computes a score for each role, where a higher score indicates higher leadership value, thus members of this
+                role being more likely to be a leader in the network.
+                """
+
+            )
 
     
     # Sidebar parameters
