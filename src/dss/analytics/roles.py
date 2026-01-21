@@ -163,11 +163,18 @@ def _cluster_similarity_matrix(
         )
         labels = sc.fit_predict(similarity)
     elif method == "hierarchical":
-        hc = AgglomerativeClustering(
-            n_clusters=n_clusters,
-            affinity="precomputed",
-            linkage="average",
-        )
+        try:
+            hc = AgglomerativeClustering(
+                n_clusters=n_clusters,
+                metric="precomputed",
+                linkage="average",
+            )
+        except TypeError:
+            hc = AgglomerativeClustering(
+                n_clusters=n_clusters,
+                affinity="precomputed",
+                linkage="average",
+            )
         labels = hc.fit_predict(1.0 - similarity)
     else:
         raise ValueError(f"Unknown clustering method: {method}")
