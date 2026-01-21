@@ -482,7 +482,7 @@ def page() -> None:
         )
 
     # === FIRST MAIN SPLIT: left controls + constants | right reorder + plot + network ===
-    col_left, col_right = st.columns([2, 3])
+    col_left, col_middle, col_right = st.columns([1, 2, 2])
 
     with col_left:
         st.subheader("Remove edges and observe effect on Kemeny")
@@ -554,7 +554,7 @@ def page() -> None:
         )
         st.dataframe(order_df, use_container_width=True, hide_index=True)
 
-    with col_right:
+    with col_middle:
         if order:
             st.markdown("### Kemeny constant after each removal")
             st.markdown(
@@ -569,6 +569,8 @@ def page() -> None:
             ax.set_title("Kemeny constant versus removal steps")
             st.pyplot(fig)
 
+        
+    with col_right:
         st.markdown("### Network view (after removing edges)")
         H = G.copy()
         for u, v in ordered_edges:
