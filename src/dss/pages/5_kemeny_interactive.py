@@ -627,35 +627,33 @@ def page() -> None:
 
 
     # edge impact algemeen
-st.markdown("## Edge impact on Kemeny constant")
-st.markdown("This graph shows the effect each edge has on the Kemeny constant. " \
-        "Note that the edges are colored by how much the Kemeny constant would change if removed. " \
-        "A red edge indicates a large increase in Kemeny constant and a blue edge indicates a decrease.")
+    st.markdown("## Edge impact on Kemeny constant")
+    st.markdown("This graph shows the effect each edge has on the Kemeny constant. " \
+    "Note that the edges are colored by how much the Kemeny constant would change if removed. " \
+    "A red edge indicates a large increase in Kemeny constant and a blue edge indicates a decrease.")
         
-        G_heat = G.copy()
-        
-        for u, v in ordered_edges:
-            if G_heat.has_edge(u, v):
+    G_heat = G.copy()
+    for u, v in ordered_edges:
+        if G_heat.has_edge(u, v):
                 G_heat.remove_edge(u, v)
-            elif not G_heat.is_directed() and G_heat.has_edge(v, u):
+        elif not G_heat.is_directed() and G_heat.has_edge(v, u):
                 G_heat.remove_edge(v, u)
         
-        current_heat_k = kemeny_constant(G_heat)
-        
-        edge_impacts = {}
-        for e in G_heat.edges():
-            result_heat = interactive_kemeny_edges(G_heat, [e], recompute_on_largest)
-            if result_heat.kemeny == result_heat.kemeny:
+    current_heat_k = kemeny_constant(G_heat)
+    edge_impacts = {}
+    for e in G_heat.edges():
+        result_heat = interactive_kemeny_edges(G_heat, [e], recompute_on_largest)
+        if result_heat.kemeny == result_heat.kemeny:
                 edge_impacts[e] = result_heat.kemeny - current_heat_k
-            else:
+        else:
                 edge_impacts[e] = None
         
-        display_network(
-            G_heat,
-            edge_color = edge_impacts,
-            title = "Edge sensitivity heatmap (Change in Kemeny if removed)",
-            show_labels = True,
-        )
+    display_network(
+        G_heat,
+        edge_color = edge_impacts,
+        title = "Edge sensitivity heatmap (Change in Kemeny if removed)",
+        show_labels = True,
+    )
 
 if __name__ == "__main__":
     page()
