@@ -206,10 +206,22 @@ def page() -> None:
                 weight_inputs[col] = st.sidebar.toggle(label=str(col), key=key)
 
             combined = borda_count(df, weight_inputs)
-    st.sidebar.markdown("<div style='margin:0;padding:0'></div>", unsafe_allow_html=True)
+    # st.sidebar.markdown("<div style='margin:0;padding:0'></div>", unsafe_allow_html=True)
+    # selected_nodes = st.sidebar.multiselect(
+    #     "Select nodes to inspect", options=list(G.nodes()), default=[]
+    #     )
     selected_nodes = st.sidebar.multiselect(
-        "Select nodes to inspect", options=list(G.nodes()), default=[]
-        )
+        "Select nodes to inspect",
+        options=list(G.nodes()),
+        default=[],
+        help="""
+Select one or more nodes to inspect in detail.
+
+Selected nodes will:
+- Always be highlighted in the network view
+- Appear in a detailed table at the bottom of this page
+"""
+    )
     
  # Compute community labels
     if get_state("community_results").get(comm_method) is None:
