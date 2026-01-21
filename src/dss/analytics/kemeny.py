@@ -246,6 +246,9 @@ def interactive_kemeny_edges(
     history: List[float] = []
     removed_so_far: List[Edge] = []
 
+    if not recompute_on_largest and nx.is_connected(G):
+        recompute_on_largest = True
+    
     for e in selected_edges:
         removed_so_far.append(e)
         k_val = kemeny_after_edge_removals(G, removed_so_far, recompute_on_largest)

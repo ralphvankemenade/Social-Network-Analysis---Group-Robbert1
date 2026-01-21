@@ -82,14 +82,17 @@ def page() -> None:
         ## Kemeny Analysis
         
         The Kemeny constant measures the expected time to go from one random node
-        to another in a Markov chain defined on the network【429076285098930†L81-L94】.  Smaller values indicate
+        to another in a Markov chain defined on the network.  Smaller values indicate
         faster mixing and better overall connectivity.  On this page you can:
         
         * View the baseline Kemeny constant for the entire network.
+        * View the edge sensitivity: how much the Kemeny constant would change if an edge is removed.
         * Interactively remove nodes (by selecting them in a list) and observe how
           the Kemeny constant changes.  A decrease after removing a node
-          suggests that the node was hindering connectivity (e.g. a bottleneck).
-        * A network plot shows the current graph; removed nodes are outlined in
+          suggests that the node was hindering connectivity (e.g. a bottleneck). Conversely,
+          an increase indicates that the node was facilitating connectivity.
+        * Change the order of removals to see how different sequences impact the Kemeny constant.
+        * View a network plot of the current graph where removed nodes are outlined in
           red and all node identifiers are displayed directly on the plot so
           that you can easily see which nodes have been removed.
         * Choose whether to recompute the constant on the largest connected
