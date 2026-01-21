@@ -597,7 +597,7 @@ def page() -> None:
         highlight_nodes_selected = list(selected_nodes)
 
         with col_right:
-            st.subheader("Network with node size by aggregated centrality", help="""
+            st.subheader("Network with centrality-aggregated nodes", help="""
 This network visualization shows the graph with node size scaled by the aggregated centrality score.
 
 Each node represents an entity in the network. Larger nodes have a higher combined centrality score, meaning they are more important or influential according to the selected aggregation method and weights. Smaller nodes are less central under the same settings.
