@@ -44,25 +44,15 @@ def page() -> None:
         * **Betweenness centrality:** Captures brokerage power; nodes with high betweenness lie on many shortest paths.
         * **Closeness centrality:** Inverse of the average distance to all other nodes; smaller values indicate quick reachability.
         * **PageRank:** Probability of visiting a node in a random walk with teleportation; similar to eigenvector but more robust.
-        
+
         ## Role Identification
         
-        This page applies the role‑similarity approach of Cooper & Barahona (2010).
-        Nodes with similar structural signatures (k‑hop neighbourhoods or
-        random‑walk profiles) are grouped into roles.  You can choose:
-        
-        * **Signature type:** k‑hop degree distributions or random‑walk probability profiles.
-        * **Similarity metric:** Cosine or correlation similarity.
-        * **Clustering algorithm:** Spectral clustering or hierarchical clustering.
-        * **Number of clusters:** Let the DSS choose automatically or set a value manually.
-        
-        The page displays a similarity heatmap, a network coloured by roles and a
-        summary of each role in terms of average centrality measures and size.  A
-        node selector in the sidebar lets you highlight specific nodes on the
-        role plot; the selected nodes’ role assignments and centrality values
-        are shown below the plot.  You can also compare role clusters to
-        communities using Adjusted Rand Index (ARI) and Normalised Mutual
-        Information (NMI).
+        This page includes various methods of role identification, with Cooper and Barahona, RoleSim, RoleSim*, and RolX. The first
+        three of these methods work by computing a similarity matrix, which can then be used for clustering, where the clustering assigns
+        the roles. RolX groups nodes together with use of feature vectors, and assigns roles to these groups. Furthermore, this page
+        creates leadership rankings for each of the computed roles, to find which roles consist of leaders and which consist of followers.
+        When possible, options are provided to adjust each of these methods to suit the user's needs, like adjusting
+        the number of roles, the distance metric used, the signature used, and adjusting parameter values.
         
         ## Community Detection & Robustness
         
@@ -160,7 +150,26 @@ def page() -> None:
           large networks; a heuristic solution is provided as a fallback.
         """
     )
-
+'''
+        ## Role Identification
+        
+        This page applies the role‑similarity approach of Cooper & Barahona (2010).
+        Nodes with similar structural signatures (k‑hop neighbourhoods or
+        random‑walk profiles) are grouped into roles.  You can choose:
+        
+        * **Signature type:** k‑hop degree distributions or random‑walk probability profiles.
+        * **Similarity metric:** Cosine or correlation similarity.
+        * **Clustering algorithm:** Spectral clustering or hierarchical clustering.
+        * **Number of clusters:** Let the DSS choose automatically or set a value manually.
+        
+        The page displays a similarity heatmap, a network coloured by roles and a
+        summary of each role in terms of average centrality measures and size.  A
+        node selector in the sidebar lets you highlight specific nodes on the
+        role plot; the selected nodes’ role assignments and centrality values
+        are shown below the plot.  You can also compare role clusters to
+        communities using Adjusted Rand Index (ARI) and Normalised Mutual
+        Information (NMI).
+'''
 
 if __name__ == "__main__":
     page()
