@@ -426,7 +426,7 @@ def page() -> None:
     combined_scores = result.combined_scores
     ranks = result.ranks
 
-    col_left, col_right = st.columns([2, 3], gap="large")
+    col_left, col_right = st.columns([2, 2], gap="small")
     with col_left:
         st.subheader("Centrality measures", help="""
     This table shows the centrality scores per node.
