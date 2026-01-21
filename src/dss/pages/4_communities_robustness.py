@@ -131,7 +131,7 @@ def page() -> None:
         )
         set_state("robustness_result", robustness_result)
     # Optional manual rerun
-    if st.sidebar.button("Run robustness test"):
+    if st.sidebar.button("Run robustness test", help = "(re)run robustness test and update changes."):
         robustness_result = perturbation_test(
             G,
             method=method,
