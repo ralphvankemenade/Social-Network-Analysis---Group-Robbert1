@@ -470,6 +470,9 @@ def page() -> None:
         )
     
         if agg_method == "Weighted sum":
+            for col in df.columns:
+                    st.session_state[f"borda_use_{col}"] = True
+            
             # Sidebar for weighting scheme
             st.sidebar.header("Weighting scheme")
             for col in df.columns:
@@ -495,7 +498,7 @@ def page() -> None:
             st.sidebar.header("Measure scheme")
     
             # Initialize all toggles to True the first time we enter Borda mode
-            if not st.session_state.get("borda_toggles_initialized", None):
+            if not st.session_state.get("borda_toggles_initialized", False):
                 for col in df.columns:
                     st.session_state[f"borda_use_{col}"] = True
                 st.session_state.borda_toggles_initialized = True
