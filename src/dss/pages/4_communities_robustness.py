@@ -1,4 +1,4 @@
-"""Streamlit page: Community detection and robustness analysis."""
+"""Streamlit page: Community Clustering."""
 
 import streamlit as st
 import pandas as pd
