@@ -152,7 +152,7 @@ Low within ratio: Community interacts heavily with other communities.
 A measure of how well a network is partitioned into communities. 
 Value close to 1: indicates strong community structure. 
 Value close to 0: indicates weak community structure.
-        """)
+        """
         )
         st.dataframe(comm_result.summary)
         
