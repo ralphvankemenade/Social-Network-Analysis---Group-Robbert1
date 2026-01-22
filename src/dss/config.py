@@ -32,7 +32,7 @@ class Defaults:
     layout: str = "spring"
 
     # Spacing multiplier for network layouts (higher = more separation)
-    layout_spacing: float = 2.6
+    layout_spacing: float = 4.0
     
     # Random seed for reproducibility
     seed: int = 55
