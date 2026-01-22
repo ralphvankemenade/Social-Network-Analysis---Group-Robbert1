@@ -33,7 +33,7 @@ class Defaults:
 
     # Spacing multiplier for network layouts (higher = more separation)
     # layout_spacing: float = 2.5
-    layout_spacing: float = 1.0
+    layout_spacing: float = 2.0
     
     # Random seed for reproducibility
     seed: int = 55
