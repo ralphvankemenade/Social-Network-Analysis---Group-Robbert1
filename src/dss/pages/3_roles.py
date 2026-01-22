@@ -628,7 +628,7 @@ def page() -> None:
         with col_left:
             st.subheader(
                 "Leader rankings",
-                help="Which roles are more likely to be leader/follower roles, where the higher the score, the more likely it is that the role to consists of leaders",
+                help="Which roles are more likely to be leader/follower roles, where the higher the score, the more likely it is that the role to consists of leaders.",
             )
             st.dataframe(leaderranking(role_result.summary))
             # Colour map for roles
@@ -637,7 +637,7 @@ def page() -> None:
             # Plot network coloured by roles with labels and interactive highlights
             st.subheader(
                 "Network coloured by roles",
-                help="Visual representation of the network, where each role has its own colour",
+                help="Visual representation of the network, where each role has its own colour. A darker colour means a lower role number, and vice versa for higher role numbers.",
             )
             # Node selection for highlight and inspection
 #             st.sidebar.subheader("Select nodes to inspect")
@@ -704,7 +704,7 @@ Selected nodes will:
             help="Compare the results of the role identification with some of the results of the community clustering",
         )
         comm_method = st.selectbox(
-            "Community method for comparison", ["louvain", "girvan_newman", "spectral"], index=0
+            "Community method for comparison", ["spectral","louvain", "girvan_newman"], index=0
         )
         # Compute community result (cached per method)
         if get_state("community_results").get(comm_method) is None:
@@ -719,6 +719,7 @@ Selected nodes will:
         st.write(f"Adjusted Rand Index between roles and communities: {ari:.3f}")
         st.write(f"Normalized Mutual Information: {nmi:.3f}")
         # Confusion matrix
+        st.subheader(f"Table: Number of nodes out of certain community present within a role", help="How many nodes from specific role are part of specific community, with rows indicating role number, and column indicating community number")
         df_conf = pd.DataFrame(
             {
                 "role": role_labels_list,
