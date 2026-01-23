@@ -3,9 +3,13 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-from graphrole.features.prune import FeaturePruner
-from graphrole.graph import interface
-from graphrole.types import DataFrameDict, DataFrameLike
+# from graphrole.features.prune import FeaturePruner
+# from graphrole.graph import interface
+# from graphrole.types import DataFrameDict, DataFrameLike
+
+from ..utils.graphrole.features.prune import FeaturePruner
+from ..utils.graphrole.graph import interface
+from ..utils.graphrole.types import DataFrameDict, DataFrameLike
 
 
 class RecursiveFeatureExtractor:
