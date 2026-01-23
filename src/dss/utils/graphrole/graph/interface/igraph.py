@@ -7,8 +7,8 @@ from typing import Dict, Iterable, List, Optional, Set
 import igraph as ig
 import pandas as pd
 
-from graphrole.graph.interface import BaseGraphInterface
-from graphrole.types import Edge, Node
+from dss.utils.graphrole.graph.interface import BaseGraphInterface
+from dss.utils.graphrole.types import Edge, Node
 
 
 IGRAPH_RESERVED_ATTRIBUTE_NAMES = {
