@@ -4,7 +4,7 @@ from typing import Dict, Any, List, Optional, Tuple
 import math
 import networkx as nx
 import pandas as pd
-from pulp import LpProblem, LpVariable, lpSum, LpMinimize, LpStatusOptimal, PULP_CBC_CMD, value
+from pulp import LpProblem, LpVariable, lpSum, LpMinimize, LpStatusOptimal, PULP_CBC_CMD, value,LpStatus
 
 from ..types import ArrestAssignmentResult
 from ..logging_config import get_logger
@@ -79,6 +79,7 @@ def _solve_ilp(
     """
     nodes = list(G.nodes())
     n = len(nodes)
+    
     # Define ILP
     prob = LpProblem("arrest_assignment", LpMinimize)
     x = LpVariable.dicts("x", nodes, lowBound=0, upBound=1, cat="Binary")
@@ -96,6 +97,7 @@ def _solve_ilp(
     try:
         solver = PULP_CBC_CMD(msg=False)
         prob.solve(solver)
+        print("LP status:", LpStatus[prob.status])
         if prob.status != LpStatusOptimal:
             logger.warning("ILP did not find an optimal solution.")
             return None
@@ -216,11 +218,11 @@ def arrest_assignment(
     weights = _compute_edge_weights(G, communities, centrality, alpha,beta)
     # Try exact ILP solution
     result = _solve_ilp(G, weights, capacity)
-    # if result is not None:
+    if result is not None:
     #     # Adjust effective arrests using beta
     #     # result.effective_arrests = float(n - beta * result.cut_edges)
        
-        # return result
+        return result
     # Fallback to heuristic
     logger.warning("Falling back to heuristic arrest assignment.")
     result = _heuristic_assignment(G, communities, centrality, capacity,weights)
