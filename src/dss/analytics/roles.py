@@ -518,7 +518,9 @@ from ..types import RoleResult
 from .centrality import compute_centralities
 from ..logging_config import get_logger
 
-from graphrole.roles.extract import RoleExtractor
+# from graphrole.roles.extract import RoleExtractor
+from ..utils.graphrole.roles.extract import RoleExtractor
+
 
 logger = get_logger(__name__)
 
