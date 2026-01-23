@@ -2,7 +2,7 @@ from typing import Tuple
 
 import numpy as np
 
-from graphrole.types import FactorTuple, MatrixLike
+from dss.utils.graphrole.types import FactorTuple, MatrixLike
 
 
 def get_description_length_costs(
