@@ -4,9 +4,9 @@ from typing import Dict, Optional, Tuple
 import numpy as np
 import pandas as pd
 
-from graphrole.roles.description_length import get_description_length_costs
-from graphrole.roles.factor import encode, get_nmf_decomposition
-from graphrole.types import DataFrameLike, FactorTuple, Node
+from dss.utils.graphrole.roles.description_length import get_description_length_costs
+from dss.utils.graphrole.roles.factor import encode, get_nmf_decomposition
+from dss.utils.graphrole.types import DataFrameLike, FactorTuple, Node
 
 
 class RoleExtractor:
