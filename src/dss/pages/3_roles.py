@@ -703,9 +703,19 @@ Selected nodes will:
             "Comparison with community clustering",
             help="Compare the results of the role identification with some of the results of the community clustering",
         )
-        comm_method = st.selectbox(
+        
+        if G.is_directed():
+                 comm_method = st.selectbox(
+            "Community method for comparison", ["spectral", "girvan_newman"], index=0
+                 )
+        else:
+                 comm_method = st.selectbox(
             "Community method for comparison", ["spectral","louvain", "girvan_newman"], index=0
-        )
+                 )
+             
+        # comm_method = st.selectbox(
+        #     "Community method for comparison", ["spectral","louvain", "girvan_newman"], index=0
+        # )
         # Compute community result (cached per method)
         if get_state("community_results").get(comm_method) is None:
             comm_result = compute_communities(G, method=comm_method, k=2)
