@@ -41,7 +41,7 @@ def page() -> None:
             st.markdown(
         """
         **Objective value**  
-        The objective value indicates how good the optimisation run is. Higher values mean a better result. However they are relative and the values cannot be used to be compare different networks.
+        The objective value indicates how good the optimisation run is. Lower values mean a better result. However they are relative and the values cannot be used to be compare different networks.
         The objective value is determined by:
         -	Alpha: importance of keeping member of the same Communities  together
         -	Beta: importance of arresting highly central members  
@@ -188,7 +188,7 @@ def page() -> None:
         centrality_metric_single = st.sidebar.selectbox("Single centrality method", list(centrality_metric_labels_single.keys()), index=2, help = "Select the method that determines the centrality of the members of the network.")
         centrality_metric = centrality_metric_labels_single[centrality_metric_single]
     
-    else: #Combined methods
+    else:  #Combined methods
         centrality_metric_labels_combined = {
             "Weighted sum": "Weighted sum",
             "Borda count": "Borda count"
@@ -217,10 +217,6 @@ def page() -> None:
                 weight_inputs[col] = st.sidebar.toggle(label=str(col), key=key)
 
             combined = borda_count(df, weight_inputs)
-    # st.sidebar.markdown("<div style='margin:0;padding:0'></div>", unsafe_allow_html=True)
-    # selected_nodes = st.sidebar.multiselect(
-    #     "Select nodes to inspect", options=list(G.nodes()), default=[]
-    #     )
     selected_nodes = st.sidebar.multiselect(
         "Select nodes to inspect",
         options=list(G.nodes()),
@@ -257,9 +253,24 @@ Selected nodes will:
         col_left, col_right = st.columns([3, 2], gap="large")
         
         with col_left:
-            st.subheader("Optimisation results", help = "The objective value indicates how good the optimisation run is. Higher values mean a better result. The effective arrests are the number of arrests possible that realistically can be carried out, considering the cross department edges." )
+            st.subheader("Optimisation results", help = "The objective value indicates how good the optimisation run is. Lower values mean a better result. The effective arrests are the number of arrests possible that realistically can be carried out, considering the cross department edges." )
+
+            current_objective = arrest_result.objective
+            last_objective = st.session_state.get("last_objective")
+
+            if last_objective is not None:
+                delta_objective = current_objective - last_objective
+                st.metric(
+                    label="Objective value", value=f"{current_objective:.3f}",
+                    delta=f"{delta_objective:+.3f}",
+                    delta_color="inverse",  # lager is beter -> groen bij negatieve delta
+                )
+
+            else:
+                st.metric(label="Objective value", value=f"{current_objective:.3f}",delta=None)
+            
+            st.session_state["last_objective"] = current_objective
         
-            st.write(f"**Objective value:** {arrest_result.objective:.3f}")
             st.write(f"**Estimated number of effective arrests:** {arrest_result.effective_arrests:.1f}")
             
             # Display network coloured by department with labels shown.  Nodes
@@ -273,7 +284,6 @@ Selected nodes will:
             risky_line = mlines.Line2D([], [], color='red', linestyle='dashed', label='Risky edge')
             legend_items = team_patches + [risky_line]
         
-
             display_network(
                 G,
                 node_color=dept_colors,
@@ -314,10 +324,7 @@ Selected nodes will:
         st.subheader("Recommended arrest order", help ="The order of the arrest has effect on the number of possible arrests. This is based on the centrality score and the number of risky edges.") 
         col_left, col_right = st.columns([2, 2], gap="large") 
         with col_right:
-            st.write(
-                f"**Total effective arrests:** "
-                f"{(simulation_df['Status'] == 'Arrested').sum()}"
-            )
+            st.metric("Total effective arrests", f"{(simulation_df['Status'] == 'Arrested').sum()}")
             display_df = arrest_order_df.copy()
             display_df["Tipped members"] = simulation_df["Tipped members"] 
             display_df["Status"] = simulation_df["Status"]

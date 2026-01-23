@@ -78,6 +78,7 @@ def init_state() -> None:
         "auth_user": None,
         # Upload tracking
         "current_file_id": None,
+        "last_objective": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -110,6 +111,7 @@ def clear_graph_state() -> None:
         "highlight_top",
         "highlight_selected",
         "highlight_arrested",
+        "last_objective"
     ]
     clear_states(keys_to_clear)
 
