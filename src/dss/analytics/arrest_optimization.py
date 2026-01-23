@@ -4,7 +4,7 @@ from typing import Dict, Any, List, Optional, Tuple
 import math
 import networkx as nx
 import pandas as pd
-from pulp import LpProblem, LpVariable, lpSum, LpMinimize, LpStatusOptimal, PULP_CBC_CMD, value,LpStatus
+from pulp import LpProblem, LpVariable, lpSum, LpMinimize, LpStatusOptimal, PULP_CBC_CMD, value
 
 from ..types import ArrestAssignmentResult
 from ..logging_config import get_logger
@@ -97,7 +97,6 @@ def _solve_ilp(
     try:
         solver = PULP_CBC_CMD(msg=False)
         prob.solve(solver)
-        print("LP status:", LpStatus[prob.status])
         if prob.status != LpStatusOptimal:
             logger.warning("ILP did not find an optimal solution.")
             return None
