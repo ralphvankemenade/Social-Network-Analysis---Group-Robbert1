@@ -187,6 +187,7 @@ Off:
 
             combined = borda_count(df, weight_inputs)
 
+        combined.index.name = "Node"
         # Display centrality table
         st.dataframe(
             df.assign(combined=combined).sort_values("combined", ascending=False),
