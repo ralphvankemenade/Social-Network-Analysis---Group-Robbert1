@@ -140,6 +140,12 @@ def page() -> None:
                 When useful: detecting nodes that receive endorsement from other important nodes.
                     """
                 )
+            st.markdown(
+                    """
+                **Gamma**  
+                The importance of risky edges when determining the arrest order.Higher values make members with risky connections to other departments more likely to be arrested later, reducing the risk of tipping other members.  
+                Gamma works together with the centrality score to balance who should be arrested first. 
+                    """)
 
     if get_state("centrality_result") is None:
         centrality_result = compute_centrality_result(G)
@@ -217,6 +223,8 @@ def page() -> None:
                 weight_inputs[col] = st.sidebar.toggle(label=str(col), key=key)
 
             combined = borda_count(df, weight_inputs)
+
+    gamma = st.sidebar.slider("Importance of risky edges (gamma)", 0.0, 5.0, 1.0, 0.1,help="Gamma determines how much risky edges affect the arrest order. Higher values make the model more likely to arrest members with risky connections later to avoid tipping others.")
     selected_nodes = st.sidebar.multiselect(
         "Select nodes to inspect",
         options=list(G.nodes()),
@@ -314,7 +322,7 @@ Selected nodes will:
                 assignment=arrest_result.assignment,
                 centrality=centrality_scores,
                 risk_edges=arrest_result.risk_edges,
-                gamma=1.0,
+                gamma=gamma,
             )
         simulation_df = simulate_sequential_arrests(
                     G,
@@ -333,6 +341,7 @@ Selected nodes will:
             display_df = display_df.set_index("Arrest order")
 
             st.dataframe(display_df)
+            # st.dataframe(arrest_order_df)
 
             # Download as CSV
             csv_data = display_df.to_csv(index=True).encode("utf-8")
