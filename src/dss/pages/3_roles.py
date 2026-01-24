@@ -518,7 +518,7 @@ def page() -> None:
     else:
         if method == "RolX":
             info["n_roles"] = st.sidebar.slider(
-                "Number of roles", 2, 6, 3, help="Set number of roles manually"
+                "Number of roles", 2, int(np.min([6,G.number_of_nodes()-1])), 3, help="Set number of roles manually"
             )
         else:
             info["n_roles"] = st.sidebar.slider(
