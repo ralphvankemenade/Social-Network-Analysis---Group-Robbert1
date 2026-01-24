@@ -203,8 +203,31 @@ High within ratio: Community mostly communicates within the community.
 Low within ratio: Community interacts heavily with other communities.
 """
                     )
-        st.write(f"Modularity Q: {comm_result.modularity:.3f}")
+        cols = st.columns(3)
+
+        cols[0].metric(
+            "Modularity Q",
+            f"{comm_result.modularity:.3f}",
+            help="Measures how well the network is partitioned into communities."
+        )
+
+        cols[1].metric(
+            "Communities",
+            len(comm_result.summary),
+            help="Number of detected communities."
+        )
+
+        cols[2].metric(
+            "Avg. within ratio",
+            f"{comm_result.summary['within_ratio'].mean():.3f}",
+            help="Average fraction of edges that stay within communities."
+        )
+
         st.dataframe(comm_result.summary)
+        
+        
+        #st.write(f"Modularity Q: {comm_result.modularity:.3f}")
+        #st.dataframe(comm_result.summary)
         
     with col_plot:
         # Network plot coloured by communities with node selection
